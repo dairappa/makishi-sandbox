@@ -160,8 +160,12 @@ window.GameAudio = (function () {
   return {
     start() {
       ensureCtx();
-      if (ctx.state === 'suspended') ctx.resume();
-      if (musicEnabled) startMusic();
+      const begin = () => { if (musicEnabled) startMusic(); };
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(begin).catch(begin);
+      } else {
+        begin();
+      }
     },
     setMusic,
     setSfx,
