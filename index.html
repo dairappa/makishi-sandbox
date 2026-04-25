@@ -128,7 +128,10 @@
       <span>NEXT</span>
       <canvas id="next-canvas" width="48" height="48"></canvas>
     </div>
-    <button id="reset-btn">リセット</button>
+    <div style="display:flex; gap:8px;">
+      <button id="sound-btn" title="音楽 ON/OFF">🔊</button>
+      <button id="reset-btn">リセット</button>
+    </div>
   </div>
   <div id="stage">
     <canvas id="game"></canvas>
@@ -142,6 +145,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
+<script src="audio.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
