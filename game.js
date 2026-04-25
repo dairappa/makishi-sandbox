@@ -4,8 +4,10 @@
   const STAGE_W = 400;
   const STAGE_H = 560;
   const WALL_T = 20;
-  const DROP_LINE_Y = 80;
-  const GAMEOVER_LINE_Y = 70;
+  const DROP_LINE_Y = 50;
+  const GAMEOVER_LINE_Y = 110;
+  const GAMEOVER_GRACE_MS = 1200;
+  const GAMEOVER_SUSTAIN_MS = 1500;
 
   // フルーツ定義: 半径、色、スコア、絵文字
   const FRUITS = [
@@ -111,7 +113,7 @@
       ...options,
     });
     body.fruitLevel = level;
-    body.justDropped = options.justDropped ?? false;
+    body.spawnedAt = performance.now();
     World.add(world, body);
     return body;
   }
@@ -121,7 +123,7 @@
     const level = nextLevel;
     const f = FRUITS[level];
     const x = clamp(pointerX, f.r + 4, STAGE_W - f.r - 4);
-    spawnFruit(x, DROP_LINE_Y, level, { justDropped: true });
+    spawnFruit(x, DROP_LINE_Y, level);
     nextLevel = queuedLevel;
     queuedLevel = randomDropLevel();
     drawNext();
@@ -161,26 +163,24 @@
 
   function checkGameOver() {
     if (gameOver) return;
+    const now = performance.now();
     const bodies = Composite.allBodies(world);
     let overFruit = false;
     for (const b of bodies) {
       if (b.label !== 'fruit') continue;
-      // ドロップ直後は判定しない、また落下中（速度がある）は判定しない
-      if (b.justDropped) {
-        if (b.position.y - b.circleRadius > DROP_LINE_Y + 4) {
-          b.justDropped = false;
-        }
-        continue;
-      }
-      if (Math.abs(b.velocity.y) > 0.5) continue;
+      // 生成直後のグレース期間中は判定しない（落下中を含む）
+      if (b.spawnedAt && now - b.spawnedAt < GAMEOVER_GRACE_MS) continue;
+      // 大きく動いている間は判定しない
+      if (Math.abs(b.velocity.y) > 0.6) continue;
+      // 頂点がゲームオーバーラインより上に出ているか
       if (b.position.y - b.circleRadius < GAMEOVER_LINE_Y) {
         overFruit = true;
         break;
       }
     }
     if (overFruit) {
-      if (overTimer === null) overTimer = performance.now();
-      else if (performance.now() - overTimer > 1500) triggerGameOver();
+      if (overTimer === null) overTimer = now;
+      else if (now - overTimer > GAMEOVER_SUSTAIN_MS) triggerGameOver();
     } else {
       overTimer = null;
     }
