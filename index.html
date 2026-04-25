@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>スイカゲーム風</title>
+<style>
+  :root {
+    --bg: #fff5d7;
+    --board: #fff9e8;
+    --frame: #b88747;
+    --line: #ff7b54;
+    --text: #5a3a1a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 420px;
+    justify-content: space-between;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: 0.05em;
+  }
+  .score-box {
+    display: flex;
+    gap: 12px;
+    font-weight: bold;
+  }
+  .score-box span { font-variant-numeric: tabular-nums; }
+  #stage {
+    position: relative;
+    background: var(--board);
+    border: 4px solid var(--frame);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    touch-action: none;
+  }
+  #stage canvas { display: block; }
+  #next-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  #next-canvas {
+    background: #fff;
+    border: 2px solid var(--frame);
+    border-radius: 8px;
+  }
+  .ui-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 420px;
+    gap: 12px;
+  }
+  button {
+    background: var(--line);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #c25b3c;
+  }
+  button:active { transform: translateY(1px); box-shadow: 0 1px 0 #c25b3c; }
+  #gameover {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: 0 0 10px 10px;
+    z-index: 10;
+  }
+  #gameover.show { display: flex; }
+  #gameover h2 { margin: 0; font-size: 28px; }
+  .hint {
+    font-size: 12px;
+    color: #8a6a3a;
+    text-align: center;
+    max-width: 420px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🍉 スイカゲーム風</h1>
+    <div class="score-box">
+      <div>SCORE: <span id="score">0</span></div>
+      <div>BEST: <span id="best">0</span></div>
+    </div>
+  </header>
+  <div class="ui-row">
+    <div id="next-box">
+      <span>NEXT</span>
+      <canvas id="next-canvas" width="48" height="48"></canvas>
+    </div>
+    <button id="reset-btn">リセット</button>
+  </div>
+  <div id="stage">
+    <canvas id="game"></canvas>
+    <div id="gameover">
+      <h2>GAME OVER</h2>
+      <div>スコア: <span id="final-score">0</span></div>
+      <button id="retry-btn">もう一度</button>
+    </div>
+  </div>
+  <p class="hint">マウスやタッチで左右に動かし、クリック/タップで落とす。同じフルーツがくっつくと進化！</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
