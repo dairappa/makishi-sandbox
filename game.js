@@ -124,6 +124,7 @@
     const f = FRUITS[level];
     const x = clamp(pointerX, f.r + 4, STAGE_W - f.r - 4);
     spawnFruit(x, DROP_LINE_Y, level);
+    GameAudio.playDrop();
     nextLevel = queuedLevel;
     queuedLevel = randomDropLevel();
     drawNext();
@@ -151,6 +152,7 @@
       const newBody = spawnFruit(nx, ny, newLevel);
       // 合体時に少しはじける感じ
       Body.setVelocity(newBody, { x: 0, y: -1.5 });
+      GameAudio.playMerge(newLevel);
 
       updateScore(FRUITS[newLevel].score);
 
@@ -189,6 +191,7 @@
   function triggerGameOver() {
     gameOver = true;
     canDrop = false;
+    GameAudio.playGameOver();
     if (score > best) {
       best = score;
       localStorage.setItem('suika-best', best);
@@ -304,6 +307,26 @@
 
   resetBtn.addEventListener('click', init);
   retryBtn.addEventListener('click', init);
+
+  // 初回操作で AudioContext を起動（自動再生制限対策）
+  let audioStarted = false;
+  function kickAudio() {
+    if (audioStarted) return;
+    audioStarted = true;
+    GameAudio.start();
+  }
+  canvas.addEventListener('mousedown', kickAudio);
+  canvas.addEventListener('touchstart', kickAudio, { passive: true });
+
+  // 音楽 ON/OFF トグル
+  const soundBtn = document.getElementById('sound-btn');
+  soundBtn.addEventListener('click', () => {
+    kickAudio();
+    const on = !GameAudio.isMusicOn();
+    GameAudio.setMusic(on);
+    GameAudio.setSfx(on);
+    soundBtn.textContent = on ? '🔊' : '🔇';
+  });
 
   init();
   render();
