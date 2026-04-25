@@ -205,7 +205,7 @@
 
   function drawNext() {
     nctx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
-    const f = FRUITS[nextLevel];
+    const f = FRUITS[queuedLevel];
     const cx = nextCanvas.width / 2;
     const cy = nextCanvas.height / 2;
     const r = Math.min(20, f.r * 0.6);
