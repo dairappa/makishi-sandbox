@@ -321,7 +321,12 @@
   // 音楽 ON/OFF トグル
   const soundBtn = document.getElementById('sound-btn');
   soundBtn.addEventListener('click', () => {
-    kickAudio();
+    // 初回クリックは「起動」として扱い、トグルしない
+    if (!audioStarted) {
+      kickAudio();
+      soundBtn.textContent = '🔊';
+      return;
+    }
     const on = !GameAudio.isMusicOn();
     GameAudio.setMusic(on);
     GameAudio.setSfx(on);
