@@ -293,17 +293,39 @@
     g.restore();
   }
 
-  // 入力処理
-  function getX(e) {
+  // 入力処理（領域外でも拾えるように window レベルで監視）
+  function getX(clientX) {
     const rect = canvas.getBoundingClientRect();
-    const cx = (e.touches ? e.touches[0].clientX : e.clientX);
-    return (cx - rect.left) * (STAGE_W / rect.width);
+    return (clientX - rect.left) * (STAGE_W / rect.width);
   }
-  canvas.addEventListener('mousemove', (e) => { pointerX = getX(e); });
-  canvas.addEventListener('mousedown', (e) => { pointerX = getX(e); dropFruit(); });
-  canvas.addEventListener('touchmove', (e) => { pointerX = getX(e); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener('touchstart', (e) => { pointerX = getX(e); }, { passive: true });
-  canvas.addEventListener('touchend', () => { dropFruit(); });
+  function isUiTarget(target) {
+    return !!(target && target.closest && target.closest('button'));
+  }
+
+  window.addEventListener('mousemove', (e) => { pointerX = getX(e.clientX); });
+  window.addEventListener('mousedown', (e) => {
+    if (isUiTarget(e.target)) return;
+    kickAudio();
+    pointerX = getX(e.clientX);
+    dropFruit();
+  });
+  window.addEventListener('touchstart', (e) => {
+    if (isUiTarget(e.target)) return;
+    if (e.touches.length === 0) return;
+    kickAudio();
+    pointerX = getX(e.touches[0].clientX);
+  }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 0) return;
+    pointerX = getX(e.touches[0].clientX);
+  }, { passive: true });
+  window.addEventListener('touchend', (e) => {
+    if (isUiTarget(e.target)) return;
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      pointerX = getX(e.changedTouches[0].clientX);
+    }
+    dropFruit();
+  });
 
   resetBtn.addEventListener('click', init);
   retryBtn.addEventListener('click', init);
@@ -315,8 +337,6 @@
     audioStarted = true;
     GameAudio.start();
   }
-  canvas.addEventListener('mousedown', kickAudio);
-  canvas.addEventListener('touchstart', kickAudio, { passive: true });
 
   // 音楽 ON/OFF トグル
   const soundBtn = document.getElementById('sound-btn');
