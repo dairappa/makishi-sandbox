@@ -240,6 +240,19 @@ const SERIES = {
         bands: [[0, .36, '#c8cdd1'], [.36, .43, '#ee5a24'], [.43, .9, '#c8cdd1'], [.9, 1, '#adb3b8']],
         win: [.47, .8, '#22282e'], winStep: 1.35, winW: 1.1, cab: '#1c2024', doors: 'three',
         front: '#ee5a24' },
+  // 四国・九州
+  S8000: { name: '8000系', carLen: 21, h: 3.5, nose: 'blunt', noseLen: 2.6, gapC: 0.7,
+        bands: [[0, .3, '#eef0f1'], [.3, .36, '#3a9a3e'], [.36, .4, '#f08a00'], [.4, 1, '#eef0f1']],
+        win: [.45, .76, '#1e252c'], winStep: 1.7, winW: 1.35, cab: '#1a1f24', doors: 'one',
+        front: '#f08a00', frontStripe: '#3a9a3e' },
+  S2700: { name: '2700系', carLen: 21, h: 3.6, nose: 'blunt', noseLen: 1.9, gapC: 0.7,
+        bands: [[0, .3, '#cdd2d6'], [.3, .36, '#c8102e'], [.36, .385, '#b8963a'], [.385, .4, '#3e8e3a'], [.4, 1, '#cdd2d6']],
+        win: [.45, .76, '#1f262c'], winStep: 1.7, winW: 1.35, cab: '#191d22', doors: 'one',
+        front: '#c8102e', frontStripe: '#b8963a' },
+  '783K': { name: '783系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 2.2, gapC: 0.7,
+        bands: [[0, .3, '#c4ccd3'], [.3, .37, '#d4262f'], [.37, 1, '#c4ccd3']],
+        win: [.45, .74, '#1e2a30'], winStep: 1.75, winW: 1.3, cab: '#1e2a30', doors: 'center',
+        front: '#d4262f' },
 };
 
 /* ---------- 駅・ステージ ---------- */
@@ -256,12 +269,6 @@ const STAGES = [
     moving:   { s: 'K1000', label: '快特 8両', cars: 8 },
     total: '新1000形 8両＋4両 → 12両', diff: 2, vApp: 20, decel: .95, react: .45, lag: .4, power: .15,
     trivia: '京急本線の上り列車には、金沢文庫で4両を増結して12両編成になり、品川方面へ向かうものがあります。短い停車時間で手際よく連結するのが見どころです。' },
-  { id: 'haiki', st: '早岐', kana: 'はいき', roman: 'Haiki', lineCol: '#e60012',
-    line: 'JR九州 佐世保線・大村線', prev: '三河内', next: '大塔',
-    standing: { s: '783H', label: 'ハウステンボス', cars: 4 },
-    moving:   { s: '783M', label: 'みどり', cars: 4 },
-    total: '783系「みどり」＋「ハウステンボス」', diff: 2, vApp: 22, decel: .85, react: .55, lag: .5, power: .13,
-    trivia: '佐世保発の特急「みどり」とハウステンボス発の特急「ハウステンボス」は、早岐駅で併結して1本の列車になり、博多へ向かいます。早岐は列車の向きが変わるスイッチバックの駅でもあります。' },
   { id: 'fukushima', st: '福島', kana: 'ふくしま', roman: 'Fukushima', lineCol: '#00a05e',
     line: 'JR東日本 東北新幹線・山形新幹線', prev: '郡山', next: '白石蔵王',
     standing: { s: 'E8', label: 'つばさ', cars: 7 },
@@ -312,6 +319,31 @@ const STAGES = [
     moving:   { s: 'HS1000', label: '快速急行 6両', cars: 6 },
     total: '1000系 6両＋2両 → 8両', diff: 1, vApp: 17, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '阪神1000系は、6両の基本編成と2両の増結編成を組み合わせて走れるように作られています。近鉄奈良線へ直通する快速急行では、かつて尼崎駅で増結・切り離しをしていました。2020年と2022年のダイヤ改正で8両のまま走るようになり、尼崎での連結作業はなくなっています。' },
+
+  { id: 'utazu', cat: 'shikoku', st: '宇多津', kana: 'うたづ', roman: 'Utazu', lineCol: '#1e9bd7',
+    line: 'JR四国 予讃線・本四備讃線', prev: '坂出', next: '丸亀',
+    standing: { s: 'S8000', label: 'しおかぜ 5両', cars: 5 },
+    moving:   { s: 'S8000', label: 'いしづち 3両', cars: 3 },
+    total: '8000系 5両＋3両 → 8両', diff: 2, vApp: 20, decel: .85, react: .5, lag: .5, power: .13,
+    trivia: '岡山発の特急「しおかぜ」と高松発の特急「いしづち」は、宇多津や多度津で連結し、松山まで1本の列車で走ります。1〜5号車が「しおかぜ」、6〜8号車が「いしづち」です。8000系はリニューアルでオレンジと緑の塗装になりました。' },
+  { id: 'tadotsu', cat: 'shikoku', st: '多度津', kana: 'たどつ', roman: 'Tadotsu', lineCol: '#1e9bd7',
+    line: 'JR四国 予讃線・土讃線', prev: '丸亀', next: '海岸寺',
+    standing: { s: 'S2700', label: '南風', cars: 3 },
+    moving:   { s: 'S2700', label: 'しまんと', cars: 2 },
+    total: '2700系「南風」＋「しまんと」', diff: 3, vApp: 22, decel: .75, react: .6, lag: .75, power: .1,
+    trivia: '岡山発の特急「南風」の一部は、高松発の特急「しまんと」と多度津または宇多津で連結し、高知まで一緒に走ります。2700系はディーゼルカーで、赤・金・緑の配色は阿波踊りやよさこいの情熱、香川のオリーブを表しています。エンジン車は重く、力行の反応が遅めです。' },
+  { id: 'haiki', cat: 'kyushu', st: '早岐', kana: 'はいき', roman: 'Haiki', lineCol: '#e60012',
+    line: 'JR九州 佐世保線・大村線', prev: '三河内', next: '大塔',
+    standing: { s: '783H', label: 'ハウステンボス', cars: 4 },
+    moving:   { s: '783M', label: 'みどり', cars: 4 },
+    total: '783系「みどり」＋「ハウステンボス」', diff: 2, vApp: 22, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '佐世保発の特急「みどり」とハウステンボス発の特急「ハウステンボス」は、早岐駅で併結して1本の列車になり、博多へ向かいます。早岐は列車の向きが変わるスイッチバックの駅でもあります。' },
+  { id: 'hizenyamaguchi', cat: 'kyushu', st: '肥前山口', place: '肥前山口駅（現・江北駅）', kana: 'ひぜんやまぐち', roman: 'Hizen-Yamaguchi', lineCol: '#e60012',
+    line: 'JR九州 長崎本線・佐世保線（2011年まで）', prev: '久保田', next: '肥前白石',
+    standing: { s: '783K', label: 'かもめ', cars: 4 },
+    moving:   { s: '783M', label: 'みどり', cars: 4 },
+    total: '783系「かもめ」＋「みどり」', diff: 2, vApp: 21, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '長崎本線と佐世保線が分かれる肥前山口駅では、長崎行きの特急「かもめ」と佐世保行きの特急「みどり」の分割・併結が行われていました。この併結は2011年に廃止され、駅名も2022年に「江北」へ変わっています。このステージは、当時の作業を再現した場面です。車両の色は単純化しています。' },
 ];
 
 const placeOf = s => s.place || s.st + '駅';
@@ -598,7 +630,7 @@ function openMenu() {
     const cat = s.cat || 'express';
     if (cat !== lastCat) {
       const h = document.createElement('h3'); h.className = 'grp';
-      h.textContent = cat === 'commuter' ? '通勤電車' : cat === 'kansai' ? '関西' : '特急・新幹線';
+      h.textContent = { commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州' }[cat] || '特急・新幹線';
       box.appendChild(h); lastCat = cat;
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
