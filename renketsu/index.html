@@ -228,6 +228,18 @@ const SERIES = {
         bands: [[0, .34, '#f1f1ec'], [.34, .43, '#1f4fa3'], [.43, .9, '#f1f1ec'], [.9, 1, '#c9ccce']],
         win: [.47, .8, '#262b31'], winStep: 1.35, winW: 1.1, cab: '#202428', doors: 'four',
         front: '#2a2e33' },
+  // 関西
+  N700S: { name: 'N700S', carLen: 25, h: 3.6, nose: 'long', noseLen: 10.7, gapC: 0.7,
+        bands: [[0, .5, '#f6f7f8'], [.5, .56, '#1d50a2'], [.56, .6, '#f6f7f8'], [.6, .62, '#1d50a2'], [.62, 1, '#f6f7f8']],
+        win: [.64, .8, '#1a2027'], winStep: 1.04, winW: .5, cab: '#10151b', doors: 'end' },
+  J225: { name: '225系5000番台', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+        bands: [[0, .36, '#c5cbd0'], [.36, .39, '#7fc3ee'], [.39, .43, '#2f7fc8'], [.43, .9, '#c5cbd0'], [.9, 1, '#a9b0b6']],
+        win: [.46, .82, '#20272e'], winStep: 1.6, winW: 1.3, cab: '#16191d', doors: 'three',
+        front: '#1b1e22', frontStripe: '#2f7fc8' },
+  HS1000: { name: '1000系', carLen: 19, h: 3.7, nose: 'flat', noseLen: .6, gapC: 0.8,
+        bands: [[0, .36, '#c8cdd1'], [.36, .43, '#ee5a24'], [.43, .9, '#c8cdd1'], [.9, 1, '#adb3b8']],
+        win: [.47, .8, '#22282e'], winStep: 1.35, winW: 1.1, cab: '#1c2024', doors: 'three',
+        front: '#ee5a24' },
 };
 
 /* ---------- 駅・ステージ ---------- */
@@ -281,7 +293,28 @@ const STAGES = [
     moving:   { s: 'OD8000', label: '6両', cars: 6 },
     total: '8000形 6両＋4両 → 10両', diff: 2, vApp: 20, decel: .9, react: .5, lag: .45, power: .15, tFull: 15, tZero: 45,
     trivia: '相模大野は小田原線と江ノ島線の分岐駅で、列車を分割・併結する駅として知られています。8000形は4両と6両の編成を組み合わせて10両で走ります。' },
+
+  { id: 'torikai', cat: 'kansai', st: '鳥飼車両基地', place: '鳥飼車両基地', kana: 'とりかい しゃりょうきち', roman: 'Torikai Depot', lineCol: '#1d50a2',
+    line: 'JR東海 東海道新幹線（救援連結訓練）', prev: '新大阪方面', next: '京都方面',
+    standing: { s: 'N700S', label: '故障列車（想定）', cars: 16 },
+    moving:   { s: 'N700S', label: '救援列車', cars: 16 },
+    total: 'N700S 16両＋16両（救援連結）', diff: 3, vApp: 24, decel: .7, react: .7, lag: .9, power: .09,
+    trivia: '東海道・山陽新幹線には、東北新幹線のような営業列車どうしの連結はありません。ただし車両の先頭には連結器が収められていて、故障で動けなくなった列車を別の列車がつないで運ぶ「救援連結」ができます。手作業で時間がかかるため、大阪府摂津市の鳥飼車両基地などで訓練が行われています。このステージは、その訓練を想定した場面です。' },
+  { id: 'hineno', cat: 'kansai', st: '日根野', kana: 'ひねの', roman: 'Hineno', lineCol: '#0072bc',
+    line: 'JR西日本 阪和線・関西空港線', prev: '熊取', next: '長滝',
+    standing: { s: 'J225', label: '関空快速 4両', cars: 4 },
+    moving:   { s: 'J225', label: '紀州路快速 4両', cars: 4 },
+    total: '225系 4両＋4両 → 8両', diff: 2, vApp: 19, decel: .9, react: .45, lag: .4, power: .15, tFull: 15, tZero: 45,
+    trivia: '関西空港から来た「関空快速」と、和歌山から来た「紀州路快速」は、日根野駅で連結して8両になり、天王寺・大阪環状線方面へ向かいます。前の1〜4号車が関空快速、後ろの5〜8号車が紀州路快速です。大阪方面からの列車は、逆に日根野で切り離されます。' },
+  { id: 'amagasaki', cat: 'kansai', st: '尼崎', kana: 'あまがさき', roman: 'Amagasaki', lineCol: '#0a5fa8',
+    line: '阪神電気鉄道 本線・阪神なんば線', prev: '出屋敷', next: '大物',
+    standing: { s: 'HS1000', label: '増結 2両', cars: 2 },
+    moving:   { s: 'HS1000', label: '快速急行 6両', cars: 6 },
+    total: '1000系 6両＋2両 → 8両', diff: 1, vApp: 17, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
+    trivia: '阪神1000系は、6両の基本編成と2両の増結編成を組み合わせて走れるように作られています。近鉄奈良線へ直通する快速急行では、かつて尼崎駅で増結・切り離しをしていました。2020年と2022年のダイヤ改正で8両のまま走るようになり、尼崎での連結作業はなくなっています。' },
 ];
+
+const placeOf = s => s.place || s.st + '駅';
 
 /* ---------- 保存 ---------- */
 const store = {
@@ -368,7 +401,7 @@ function newGame(stage) {
     pro: $('pro').checked,
   };
   ppm = Math.max(4, (W * .62) / (G.gap + 10));
-  $('where').textContent = `${stage.st}駅　${stage.line}　${stage.total}`;
+  $('where').textContent = `${placeOf(stage)}　${stage.line}　${stage.total}`;
   btnRed.disabled = false; btnGreen.disabled = true;
   $('hud').hidden = G.pro;
   say(`<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
@@ -530,7 +563,7 @@ function showResult() {
     const key = stg.id + (G.pro ? '-pro' : '');
     const prevBest = best[key] || 0; const isBest = s.total > prevBest;
     if (isBest) { best[key] = s.total; store.set('renketsu-best', best); }
-    html = `<h2>${stg.st}駅　連結完了</h2>
+    html = `<h2>${placeOf(stg)}　連結完了</h2>
       <div><div class="score">${s.total}<small style="font-size:1.2rem"> 点</small></div>
       <div class="rank">ランク ${rk}　<span style="font-weight:400;font-size:1rem;color:var(--muted)">${rt}</span></div>
       ${isBest ? '<div style="color:var(--led);margin-top:4px">自己ベスト更新' + (G.pro ? '（プロモード）' : '') + '</div>' : ''}</div>
@@ -541,7 +574,7 @@ function showResult() {
         ${G.retries ? `<div><span>連結やり直し ${G.retries} 回</span><span>−${s.pen}</span></div>` : ''}
       </div>`;
   }
-  html += `<div class="trivia"><b>${stg.st}駅（${stg.line}）</b><br>${stg.trivia}</div>
+  html += `<div class="trivia"><b>${placeOf(stg)}（${stg.line}）</b><br>${stg.trivia}</div>
     <div class="btns">
       <button type="button" id="rAgain" class="${G.fail || !next ? 'pri' : ''}">もう一度</button>
       ${next && !G.fail ? `<button type="button" id="rNext" class="pri">次の駅：${next.st}</button>` : ''}
@@ -565,7 +598,7 @@ function openMenu() {
     const cat = s.cat || 'express';
     if (cat !== lastCat) {
       const h = document.createElement('h3'); h.className = 'grp';
-      h.textContent = cat === 'commuter' ? '通勤電車' : '特急・新幹線';
+      h.textContent = cat === 'commuter' ? '通勤電車' : cat === 'kansai' ? '関西' : '特急・新幹線';
       box.appendChild(h); lastCat = cat;
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
