@@ -435,6 +435,7 @@ function newGame(stage) {
   ppm = Math.max(4, (W * .62) / (G.gap + 10));
   $('where').textContent = `${placeOf(stage)}　${stage.line}　${stage.total}`;
   btnRed.disabled = false; btnGreen.disabled = true;
+  resetInput();
   $('hud').hidden = G.pro;
   say(`<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
   Snd.whistle(.5, false);
@@ -443,12 +444,22 @@ function newGame(stage) {
 function say(html) { elMsg.innerHTML = html; }
 
 /* ---------- 入力 ---------- */
+function resetInput() {
+  input.red = input.green = false;
+  btnRed.classList.remove('on'); btnGreen.classList.remove('on');
+}
 function setInput(which, val) {
+  // 離す操作は状態に関係なく必ず反映する（押しっぱなしのまま残らないように）
+  if (!val) {
+    input[which] = false;
+    (which === 'red' ? btnRed : btnGreen).classList.remove('on');
+    return;
+  }
   if (!G || G.state === 'result') return;
-  if (input[which] === val) return;
-  input[which] = val;
-  (which === 'red' ? btnRed : btnGreen).classList.toggle('on', val);
-  if (!val) return;
+  const wasDown = input[which];
+  input[which] = true;
+  (which === 'red' ? btnRed : btnGreen).classList.add('on');
+  if (wasDown && !(which === 'red' && G.state === 'approach')) return;
   Snd.init();
   if (which === 'red') {
     if (G.state === 'approach') {
@@ -516,7 +527,9 @@ function update(dt) {
   } else if (G.state === 'guide') {
     G.guideT += dt;
     const target = input.red ? -.55 : input.green ? st.power : -.035;
-    G.acc += (target - G.acc) * Math.min(1, dt / st.lag);
+    // ブレーキは力行より早く効く（応答の遅れを短くする）
+    const lag = target < G.acc ? Math.min(st.lag, .25) : st.lag;
+    G.acc += (target - G.acc) * Math.min(1, dt / lag);
     G.v += G.acc * dt;
     if (G.v <= 0) { G.v = 0; if (G.acc < 0) G.acc = Math.max(G.acc, -0.02); }
     G.v = Math.min(G.v, 12 / 3.6);
@@ -623,7 +636,7 @@ function showResult() {
 /* ---------- メニュー ---------- */
 function openMenu() {
   $('result').hidden = true; $('menu').hidden = false;
-  input.red = input.green = false;
+  resetInput();
   const box = $('cards'); box.innerHTML = '';
   let lastCat = null;
   for (const s of STAGES) {
