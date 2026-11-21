@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>連結誘導係</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap">
+<style>
+/* Layout: one-screen game. Canvas platform scene on top, two big flag buttons at the bottom, overlays for station select and results. Single dusk-platform look in both themes. */
+:root {
+  --night: #141b26;      /* platform at dusk */
+  --panel: #1f2937;
+  --ink: #eef1f4;
+  --muted: #9aa6b4;
+  --led: #ffb43a;        /* LED departure board amber */
+  --flag-red: #d9252b;
+  --flag-green: #13985a;
+  --sign: #f7f8f6;
+  --font-ui: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-led: "DotGothic16", "Osaka-Mono", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--night); color: var(--ink);
+  font-family: var(--font-ui); overflow: hidden;
+  -webkit-user-select: none; user-select: none; overscroll-behavior: none;
+}
+#app { height: 100%; display: flex; flex-direction: column; }
+.bar {
+  display: flex; align-items: center; gap: 12px;
+  padding-block: 8px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: #0d121a; border-bottom: 1px solid #2a3545;
+}
+.bar h1 { margin: 0; font-size: 1.05rem; font-weight: 900; letter-spacing: .08em; white-space: nowrap; }
+.bar .where { flex: 1; min-width: 0; font-size: .82rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar button {
+  font: inherit; font-size: .8rem; color: var(--ink); background: var(--panel);
+  border: 1px solid #3a4658; border-radius: 6px; padding: 6px 10px; cursor: pointer; white-space: nowrap;
+}
+.bar button:focus-visible, .controls button:focus-visible, .card:focus-visible, .ov button:focus-visible { outline: 3px solid var(--led); outline-offset: 2px; }
+.stage { position: relative; flex: 1; min-height: 0; }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.hud {
+  position: absolute; top: 10px; right: max(12px, env(safe-area-inset-right, 0px));
+  display: flex; gap: 8px; pointer-events: none;
+}
+.led {
+  background: #07090c; border: 2px solid #2b323c; border-radius: 6px; padding: 4px 10px 6px;
+  font-family: var(--font-led); color: var(--led); min-width: 7.2em; text-align: right;
+  font-variant-numeric: tabular-nums; box-shadow: inset 0 0 12px rgba(255,180,58,.08);
+}
+.led small { display: block; text-align: left; font-size: .68rem; color: #c98a28; letter-spacing: .1em; }
+.led b { font-weight: 400; font-size: 1.45rem; letter-spacing: .04em; }
+.led.ok b { color: #66e08f; }
+.msg {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  width: min(640px, calc(100% - 32px)); text-align: center;
+  background: rgba(8,11,16,.82); border: 1px solid #344155; border-radius: 8px;
+  padding: 8px 14px; font-size: .95rem; line-height: 1.5; pointer-events: none; text-wrap: balance;
+}
+.msg em { font-style: normal; color: var(--led); font-weight: 700; }
+.controls {
+  display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px;
+  padding-block: 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: #0d121a; border-top: 1px solid #2a3545;
+}
+.controls button {
+  font: inherit; font-weight: 900; font-size: 1.15rem; letter-spacing: .06em; color: #fff;
+  border: 0; border-radius: 10px; padding: 14px 8px 12px; cursor: pointer; touch-action: none;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  box-shadow: 0 4px 0 rgba(0,0,0,.45); transition: transform .05s, box-shadow .05s, filter .1s;
+}
+.controls button span { font-size: .72rem; font-weight: 400; opacity: .85; letter-spacing: .02em; }
+.controls button kbd { font-family: var(--font-led); font-size: .7rem; opacity: .7; }
+#btnRed { background: var(--flag-red); }
+#btnGreen { background: var(--flag-green); }
+.controls button.on { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.45); filter: brightness(1.15); }
+.controls button:disabled { filter: grayscale(.8) brightness(.6); cursor: default; }
+
+/* overlays */
+.ov {
+  position: fixed; inset: 0; z-index: 20; overflow-y: auto;
+  background: rgba(10,14,20,.94);
+  padding-block: calc(20px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.ov .inner { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.ov h2 { margin: 0; font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 900; letter-spacing: .1em; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); line-height: 1.7; max-width: 62ch; }
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.howto div { background: var(--panel); border-radius: 8px; padding: 10px 12px; font-size: .85rem; line-height: 1.6; min-width: 0; }
+.howto b { display: block; font-size: .95rem; margin-bottom: 2px; }
+.howto .r { color: #ff7a7e; } .howto .g { color: #5fd892; } .howto .a { color: var(--led); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.card {
+  text-align: left; font: inherit; color: var(--ink); cursor: pointer;
+  background: var(--panel); border: 1px solid #344155; border-radius: 10px; padding: 0; overflow: hidden;
+  display: flex; flex-direction: column; min-width: 0; transition: border-color .15s, transform .15s;
+}
+.card:hover { border-color: var(--led); transform: translateY(-2px); }
+.ekimei { background: var(--sign); color: #111; padding: 10px 12px 0; text-align: center; }
+.ekimei .nm { font-size: 1.7rem; font-weight: 900; letter-spacing: .25em; line-height: 1.1; }
+.ekimei .kn { font-size: .78rem; letter-spacing: .3em; }
+.ekimei .lc { height: 7px; margin: 8px -12px 0; }
+.ekimei .adj { display: flex; justify-content: space-between; font-size: .66rem; padding: 3px 0 5px; color: #333; }
+.card .body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; font-size: .82rem; line-height: 1.55; }
+.card .line { color: var(--muted); }
+.card .meta { display: flex; justify-content: space-between; margin-top: 4px; font-family: var(--font-led); color: var(--led); }
+.opt { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--muted); }
+.opt input { width: 18px; height: 18px; accent-color: var(--led); }
+
+.result .score { font-family: var(--font-led); font-size: 3.2rem; color: var(--led); line-height: 1; }
+.result .rank { font-size: 1.3rem; font-weight: 900; }
+.rows { display: grid; gap: 6px; max-width: 520px; }
+.rows div { display: flex; justify-content: space-between; gap: 12px; background: var(--panel); border-radius: 6px; padding: 8px 12px; font-size: .9rem; }
+.rows div span:last-child { font-family: var(--font-led); color: var(--led); white-space: nowrap; }
+.trivia { background: #18212d; border-left: 3px solid var(--led); padding: 10px 14px; font-size: .86rem; line-height: 1.7; max-width: 62ch; border-radius: 0 6px 6px 0; }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.btns button {
+  font: inherit; font-weight: 700; font-size: 1rem; padding: 10px 18px; border-radius: 8px; cursor: pointer;
+  border: 1px solid #3a4658; background: var(--panel); color: var(--ink);
+}
+.btns button.pri { background: var(--flag-green); border-color: var(--flag-green); color: #fff; }
+.fail .score { color: #ff6b70; }
+.note { font-size: .74rem; color: #6f7c8c; line-height: 1.6; max-width: 70ch; }
+@media (max-width: 520px) {
+  .led b { font-size: 1.1rem; } .led { min-width: 5.8em; padding: 3px 7px 4px; }
+  .msg { font-size: .82rem; }
+  .bar .where { display: none; }
+  .hud { flex-direction: column; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .card, .controls button { transition: none; } }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="bar">
+    <h1>連結誘導係</h1>
+    <div class="where" id="where"></div>
+    <button id="btnSound" type="button" aria-pressed="false">音 OFF</button>
+    <button id="btnMenu" type="button">駅一覧</button>
+  </header>
+  <main class="stage">
+    <canvas id="cv" aria-label="ホームから見た連結作業の様子"></canvas>
+    <div class="hud" id="hud">
+      <div class="led" id="ledGap"><small>間隔</small><b id="vGap">--.- m</b></div>
+      <div class="led" id="ledSpd"><small>速度</small><b id="vSpd">-.- km/h</b></div>
+    </div>
+    <div class="msg" id="msg"></div>
+  </main>
+  <div class="controls">
+    <button id="btnRed" type="button">赤旗　止まれ<span>押す／押し続けてブレーキ</span><kbd>X・↓</kbd></button>
+    <button id="btnGreen" type="button">緑旗　こちらへ<span>押し続けて旗を振る（力行）</span><kbd>SPACE</kbd></button>
+  </div>
+</div>
+
+<section class="ov" id="menu">
+  <div class="inner">
+    <h2>連結誘導係</h2>
+    <p class="lead">あなたはホームに立つ駅員です。停車中の列車に、後から入ってくる列車を旗の合図だけで連結させます。運転士はあなたの旗を見てブレーキと力行を操作します。</p>
+    <div class="howto">
+      <div><b class="r">1. 赤旗で一旦停止</b>進入してくる列車を、連結面の手前3〜8mで止めます。合図が遅いと衝突です。</div>
+      <div><b class="g">2. 緑旗を振って誘導</b>長押しで旗を振ると、運転士がそっと力行します。離すと惰行、赤旗でブレーキ。</div>
+      <div><b class="a">3. 連結速度を合わせる</b>1.5〜2.5 km/hで当てると満点。遅すぎると連結器がかからず、速すぎると衝撃事故です。</div>
+    </div>
+    <label class="opt"><input type="checkbox" id="pro"> プロモード：間隔と速度の表示を消して、目測だけで誘導する</label>
+    <div class="cards" id="cards"></div>
+    <p class="note">駅・路線・形式・列車名は実在のものですが、どちらの編成が先着するか、停止位置、合図の方法などはゲーム用に簡略化しています。車両の絵は塗装の特徴を単純化したものです。</p>
+  </div>
+</section>
+
+<section class="ov result" id="result" hidden>
+  <div class="inner" id="resultInner"></div>
+</section>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- 車両形式 ---------- */
+// bands: [from, to, color] 車体高さに対する比率（下から）
+const SERIES = {
+  E5: { name: 'E5系', carLen: 25, h: 3.65, nose: 'long', noseLen: 15, gapC: 0.7,
+        bands: [[0, .52, '#f3f4f1'], [.52, .555, '#e4007f'], [.555, .93, '#0d7a5d'], [.93, 1, '#cfd5d6']],
+        win: [.6, .76, '#16222a'], winStep: 1.04, winW: .5, cab: '#0b1218', doors: 'end' },
+  E6: { name: 'E6系', carLen: 20, h: 3.45, nose: 'long', noseLen: 13, gapC: 0.7,
+        bands: [[0, .5, '#f3f4f1'], [.5, .53, '#b8bcc2'], [.53, .94, '#c3102f'], [.94, 1, '#d8d8d6']],
+        win: [.58, .75, '#1b1b1f'], winStep: 1.0, winW: .5, cab: '#0b0b10', doors: 'end' },
+  E8: { name: 'E8系', carLen: 20, h: 3.45, nose: 'long', noseLen: 9, gapC: 0.7,
+        bands: [[0, .5, '#f2f2f4'], [.5, .54, '#f0b400'], [.54, .93, '#5c3a86'], [.93, 1, '#d6d3dc']],
+        win: [.59, .76, '#1a1622'], winStep: 1.0, winW: .5, cab: '#0d0a12', doors: 'end' },
+  E259: { name: 'E259系', carLen: 20, h: 3.7, nose: 'blunt', noseLen: 2.4, gapC: 0.7,
+        bands: [[0, .78, '#f5f6f6'], [.78, .84, '#c8102e'], [.84, 1, '#9fa6ab']],
+        win: [.42, .72, '#15181c'], winStep: 1.7, winW: 1.35, cab: '#15181c', doors: 'one',
+        front: '#18191b', frontStripe: '#c8102e' },
+  K1000: { name: '新1000形', carLen: 18, h: 3.85, nose: 'flat', noseLen: .6, gapC: 0.8,
+        bands: [[0, .37, '#d7001a'], [.37, .44, '#f4f4f2'], [.44, 1, '#d7001a']],
+        win: [.47, .77, '#202124'], winStep: 2.6, winW: 1.5, cab: '#1a1b1e', doors: 'three' },
+  '783M': { name: '783系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 2.2, gapC: 0.7,
+        bands: [[0, .3, '#c4ccd3'], [.3, .37, '#2e9b4f'], [.37, 1, '#c4ccd3']],
+        win: [.45, .74, '#1e2a30'], winStep: 1.75, winW: 1.3, cab: '#1e2a30', doors: 'center',
+        front: '#2e9b4f' },
+  '783H': { name: '783系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 2.2, gapC: 0.7,
+        bands: [[0, .3, '#c4ccd3'], [.3, .37, '#ef7d00'], [.37, 1, '#c4ccd3']],
+        win: [.45, .74, '#1e2a30'], winStep: 1.75, winW: 1.3, cab: '#1e2a30', doors: 'center',
+        front: '#ef7d00' },
+};
+
+/* ---------- 駅・ステージ ---------- */
+const STAGES = [
+  { id: 'tokyo', st: '東京', kana: 'とうきょう', roman: 'Tōkyō', lineCol: '#0072bc',
+    line: 'JR東日本 総武快速線（地下ホーム）', prev: '新橋', next: '新日本橋',
+    standing: { s: 'E259', label: '成田エクスプレス', cars: 6 },
+    moving:   { s: 'E259', label: '成田エクスプレス', cars: 6 },
+    total: 'E259系 6両＋6両 → 12両', diff: 1, vApp: 17, decel: .9, react: .45, lag: .35, power: .14,
+    trivia: '成田エクスプレスは、大船・横浜方面から来た6両と、新宿・池袋方面から来た6両を東京駅で連結し、12両で成田空港へ向かう列車があります。地下5階のホームでの連結作業は東京駅の名物です。' },
+  { id: 'kanazawabunko', st: '金沢文庫', kana: 'かなざわぶんこ', roman: 'Kanazawa-bunko', lineCol: '#00a3d9',
+    line: '京急本線', prev: '金沢八景', next: '能見台',
+    standing: { s: 'K1000', label: '増結4両', cars: 4 },
+    moving:   { s: 'K1000', label: '快特 8両', cars: 8 },
+    total: '新1000形 8両＋4両 → 12両', diff: 2, vApp: 20, decel: .95, react: .45, lag: .4, power: .15,
+    trivia: '京急本線の上り列車には、金沢文庫で4両を増結して12両編成になり、品川方面へ向かうものがあります。短い停車時間で手際よく連結するのが見どころです。' },
+  { id: 'haiki', st: '早岐', kana: 'はいき', roman: 'Haiki', lineCol: '#e60012',
+    line: 'JR九州 佐世保線・大村線', prev: '三河内', next: '大塔',
+    standing: { s: '783H', label: 'ハウステンボス', cars: 4 },
+    moving:   { s: '783M', label: 'みどり', cars: 4 },
+    total: '783系「みどり」＋「ハウステンボス」', diff: 2, vApp: 22, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '佐世保発の特急「みどり」とハウステンボス発の特急「ハウステンボス」は、早岐駅で併結して1本の列車になり、博多へ向かいます。早岐は列車の向きが変わるスイッチバックの駅でもあります。' },
+  { id: 'fukushima', st: '福島', kana: 'ふくしま', roman: 'Fukushima', lineCol: '#00a05e',
+    line: 'JR東日本 東北新幹線・山形新幹線', prev: '郡山', next: '白石蔵王',
+    standing: { s: 'E8', label: 'つばさ', cars: 7 },
+    moving:   { s: 'E5', label: 'やまびこ', cars: 10 },
+    total: 'E5系 10両＋E8系 7両 → 17両', diff: 3, vApp: 25, decel: .75, react: .6, lag: .7, power: .11,
+    trivia: '山形新幹線「つばさ」は福島駅で東北新幹線「やまびこ」と併結し、東京へ向かいます。2024年に登場したE8系は、E5系と連結したまま最高300km/hで走ります。' },
+  { id: 'morioka', st: '盛岡', kana: 'もりおか', roman: 'Morioka', lineCol: '#00a05e',
+    line: 'JR東日本 東北新幹線・秋田新幹線', prev: '新花巻', next: 'いわて沼宮内',
+    standing: { s: 'E6', label: 'こまち', cars: 7 },
+    moving:   { s: 'E5', label: 'はやぶさ', cars: 10 },
+    total: 'E5系 10両＋E6系 7両 → 17両', diff: 3, vApp: 28, decel: .7, react: .65, lag: .8, power: .1,
+    trivia: '秋田新幹線「こまち」は盛岡駅で「はやぶさ」と併結し、最高320km/hで東京へ向かいます。連結のときは先頭のノーズカバーが開き、中から連結器が現れます。' },
+];
+
+/* ---------- 保存 ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+let best = store.get('renketsu-best', {});
+
+/* ---------- 音 ---------- */
+const Snd = {
+  ctx: null, on: false, rumbleGain: null,
+  init() {
+    if (this.ctx) return;
+    try {
+      const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+      this.ctx = new C();
+      const len = this.ctx.sampleRate * 2, buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      this.noise = buf;
+      const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+      const lp = this.ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180;
+      this.rumbleGain = this.ctx.createGain(); this.rumbleGain.gain.value = 0;
+      src.connect(lp).connect(this.rumbleGain).connect(this.ctx.destination); src.start();
+    } catch (e) { this.ctx = null; }
+  },
+  whistle(dur, trill) {
+    if (!this.on || !this.ctx) return;
+    const c = this.ctx, t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+    o.frequency.value = 2900; lfo.frequency.value = trill ? 28 : 6; lg.gain.value = trill ? 180 : 25;
+    lfo.connect(lg).connect(o.frequency);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.09, t + .03);
+    g.gain.setValueAtTime(.09, t + dur - .06); g.gain.linearRampToValueAtTime(0, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); lfo.start(t); o.stop(t + dur); lfo.stop(t + dur);
+  },
+  clunk(power) {
+    if (!this.on || !this.ctx) return;
+    const c = this.ctx, t = c.currentTime;
+    const s = c.createBufferSource(); s.buffer = this.noise;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = .8;
+    const g = c.createGain(); g.gain.setValueAtTime(.5 * power, t); g.gain.exponentialRampToValueAtTime(.001, t + .35);
+    s.connect(f).connect(g).connect(c.destination); s.start(t); s.stop(t + .4);
+    const o = c.createOscillator(), og = c.createGain(); o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(40, t + .3);
+    og.gain.setValueAtTime(.6 * power, t); og.gain.exponentialRampToValueAtTime(.001, t + .35);
+    o.connect(og).connect(c.destination); o.start(t); o.stop(t + .4);
+  },
+  rumble(v) {
+    if (!this.ctx || !this.rumbleGain) return;
+    const target = this.on ? Math.min(.5, v / 8) : 0;
+    this.rumbleGain.gain.setTargetAtTime(target, this.ctx.currentTime, .15);
+  },
+};
+
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const btnRed = $('btnRed'), btnGreen = $('btnGreen');
+const elMsg = $('msg'), vGap = $('vGap'), vSpd = $('vSpd'), ledGap = $('ledGap'), ledSpd = $('ledSpd');
+let W = 0, H = 0, DPR = 1;
+
+function resize() {
+  const r = cv.getBoundingClientRect();
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = r.width; H = r.height;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+}
+new ResizeObserver(resize).observe(cv);
+
+/* ---------- ゲーム状態 ---------- */
+let G = null;
+let ppm = 8; // pixels per meter（カメラ）
+const input = { red: false, green: false };
+
+function newGame(stage) {
+  const r = (a) => 1 + (Math.random() * 2 - 1) * a;
+  G = {
+    stage, S: SERIES[stage.standing.s], M: SERIES[stage.moving.s],
+    state: 'approach', t: 0,
+    gap: 62 + Math.random() * 16,
+    v: stage.vApp / 3.6 * r(.08),
+    brakeLvl: 0, brakeT: 0, acc: 0,
+    stopGap: null, guideT: 0, retries: 0, coupleKmh: null,
+    shake: 0, coupler: 0, flagWave: 0, flagShown: null, stateT: 0, fail: null,
+    pro: $('pro').checked,
+  };
+  ppm = Math.max(4, (W * .62) / (G.gap + 10));
+  $('where').textContent = `${stage.st}駅　${stage.line}　${stage.total}`;
+  btnRed.disabled = false; btnGreen.disabled = true;
+  $('hud').hidden = G.pro;
+  say(`<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
+  Snd.whistle(.5, false);
+}
+
+function say(html) { elMsg.innerHTML = html; }
+
+/* ---------- 入力 ---------- */
+function setInput(which, val) {
+  if (!G || G.state === 'result') return;
+  if (input[which] === val) return;
+  input[which] = val;
+  (which === 'red' ? btnRed : btnGreen).classList.toggle('on', val);
+  if (!val) return;
+  Snd.init();
+  if (which === 'red') {
+    if (G.state === 'approach') {
+      G.state = 'braking'; G.brakeT = 0; G.flagShown = 'red';
+      Snd.whistle(1.0, false);
+      say('赤旗を確認。運転士がブレーキをかけます…');
+    } else if (G.state === 'guide') Snd.whistle(.35, false);
+  } else {
+    if (G.state === 'approach' || G.state === 'braking') {
+      say('まだ速すぎます。先に<em>赤旗</em>で一旦停止させてください。');
+    } else if (G.state === 'guide') Snd.whistle(.25, true);
+  }
+}
+function bindHold(btn, which) {
+  const down = e => { e.preventDefault(); if (btn.disabled) return; try { btn.setPointerCapture(e.pointerId); } catch (_) {} setInput(which, true); };
+  const up = () => setInput(which, false);
+  btn.addEventListener('pointerdown', down);
+  btn.addEventListener('pointerup', up);
+  btn.addEventListener('pointercancel', up);
+  btn.addEventListener('lostpointercapture', up);
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+  btn.addEventListener('keydown', e => { if ((e.key === 'Enter') && !e.repeat) { e.preventDefault(); setInput(which, true); } });
+  btn.addEventListener('keyup', e => { if (e.key === 'Enter') setInput(which, false); });
+}
+bindHold(btnRed, 'red'); bindHold(btnGreen, 'green');
+const KEYS = { Space: 'green', KeyZ: 'green', ArrowUp: 'green', KeyX: 'red', ArrowDown: 'red', KeyS: 'red' };
+window.addEventListener('keydown', e => {
+  if (!$('menu').hidden || !$('result').hidden) return;
+  const k = KEYS[e.code]; if (!k) return; e.preventDefault(); if (!e.repeat) setInput(k, true);
+});
+window.addEventListener('keyup', e => { const k = KEYS[e.code]; if (k) { e.preventDefault(); setInput(k, false); } });
+window.addEventListener('blur', () => { setInput('red', false); setInput('green', false); });
+
+/* ---------- 物理 ---------- */
+const KMH = v => v * 3.6;
+function update(dt) {
+  if (!G) return;
+  G.t += dt; G.stateT += dt;
+  G.flagWave += dt * (input.green && G.state === 'guide' ? 9 : 0);
+  G.shake = Math.max(0, G.shake - dt * 2.2);
+  const st = G.stage;
+
+  if (G.state === 'approach' || G.state === 'braking') {
+    let a = -0.01;
+    if (G.state === 'braking') {
+      G.brakeT += dt;
+      if (G.brakeT > st.react) G.brakeLvl = Math.min(1, G.brakeLvl + dt * 2.2);
+      a = -st.decel * G.brakeLvl;
+    }
+    G.v = Math.max(0, G.v + a * dt);
+    G.gap -= G.v * dt;
+    if (G.gap <= 0) { G.gap = 0; return crash(`${KMH(G.v).toFixed(1)} km/hのまま停車中の列車に衝突しました。赤旗はもっと早めに。`); }
+    if (G.state === 'braking' && G.v === 0) {
+      G.stopGap = G.gap; G.state = 'hold'; G.stateT = 0; G.flagShown = null;
+      const g = G.gap;
+      const verdict = g < 3 ? '近すぎ！ ひやりとしました' : g <= 8 ? (g >= 4 && g <= 6 ? 'ぴったり！' : '良い位置') : g <= 15 ? 'やや手前' : 'ずいぶん手前';
+      say(`一旦停止　連結面まで <em>${g.toFixed(1)} m</em>　${verdict}`);
+    }
+  } else if (G.state === 'hold') {
+    G.coupler = Math.min(1, G.coupler + dt * 1.2);
+    if (G.stateT > 1.8) {
+      G.state = 'guide'; G.stateT = 0; btnGreen.disabled = false;
+      say(`<em>緑旗</em>を押し続けて振ると、運転士が少しずつ動かします。連結速度 <em>1.5〜2.5 km/h</em> を狙って。`);
+    }
+  } else if (G.state === 'guide') {
+    G.guideT += dt;
+    const target = input.red ? -.55 : input.green ? st.power : -.035;
+    G.acc += (target - G.acc) * Math.min(1, dt / st.lag);
+    G.v += G.acc * dt;
+    if (G.v <= 0) { G.v = 0; if (G.acc < 0) G.acc = Math.max(G.acc, -0.02); }
+    G.v = Math.min(G.v, 12 / 3.6);
+    G.gap -= G.v * dt;
+    G.flagShown = input.red ? 'red' : input.green ? 'green' : null;
+    if (G.gap <= 0) contact();
+    if (G.guideT > 150) crash('誘導に時間がかかりすぎて、発車時刻を大幅に過ぎてしまいました。');
+  } else if (G.state === 'coupled') {
+    if (G.stateT > 2.4) showResult();
+  } else if (G.state === 'retry') {
+    if (G.stateT > 1.2) { G.state = 'guide'; G.stateT = 0; }
+  }
+}
+
+function contact() {
+  const k = KMH(G.v);
+  if (k < 0.8) {
+    G.retries++; G.gap = 0.45; G.v = 0; G.acc = 0; G.state = 'retry'; G.stateT = 0; G.shake = .15;
+    Snd.clunk(.25);
+    say(`<em>連結できず</em>（${k.toFixed(1)} km/h）。押しが弱く連結器がかかりませんでした。もう一度呼び寄せてください。`);
+    return;
+  }
+  if (k > 6) { G.gap = 0; G.shake = 1.4; Snd.clunk(1); return crash(`${k.toFixed(1)} km/hで激突しました。連結器と乗客に大きな衝撃が加わりました。`); }
+  G.coupleKmh = k; G.gap = 0; G.v = 0; G.acc = 0; G.state = 'coupled'; G.stateT = 0;
+  G.shake = Math.min(1, k / 4); G.flagShown = null;
+  btnRed.disabled = true; btnGreen.disabled = true;
+  Snd.clunk(Math.min(1, .3 + k / 5));
+  say(`<em>ガチャン！</em> 連結完了（${k.toFixed(1)} km/h）。${st().total.split('→').pop().trim()}になりました。`);
+}
+const st = () => G.stage;
+
+function crash(text) {
+  G.state = 'result'; G.fail = text; G.shake = 1.4; G.v = 0;
+  btnRed.disabled = true; btnGreen.disabled = true;
+  Snd.clunk(1);
+  setTimeout(showResult, 1300);
+}
+
+/* ---------- 採点・結果 ---------- */
+function scoreOf() {
+  const sg = G.stopGap;
+  const stopPts = Math.round(Math.max(0, 40 - Math.max(0, Math.abs(sg - 5) - 1) * 12));
+  const k = G.coupleKmh;
+  let cp;
+  if (k >= 1.5 && k <= 2.5) cp = 40;
+  else if (k < 1.5) cp = 40 * Math.max(0, (k - .8) / .7);
+  else if (k <= 3.5) cp = 40 * (3.5 - k) + 0;
+  else cp = 5 * (6 - k) / 2.5;
+  cp = Math.round(Math.max(0, cp));
+  const tp = Math.round(20 * Math.max(0, Math.min(1, (60 - G.guideT) / 40)));
+  const pen = G.retries * 10;
+  const total = Math.max(0, stopPts + cp + tp - pen) + (G.pro ? 0 : 0);
+  return { stopPts, cp, tp, pen, total };
+}
+function rankOf(n) {
+  return n >= 90 ? ['S', '名人の誘導。運転士から無線でお礼が届きました'] :
+         n >= 75 ? ['A', '一人前。安心して任せられる誘導です'] :
+         n >= 55 ? ['B', '見習い卒業まであと少し'] : ['C', '要訓練。指導係と一緒にもう一度'];
+}
+
+function showResult() {
+  if (!G || $('result').hidden === false) return;
+  G.state = 'result';
+  Snd.rumble(0);
+  const stg = G.stage, idx = STAGES.indexOf(stg), next = STAGES[idx + 1];
+  const root = $('resultInner'); root.innerHTML = '';
+  $('result').classList.toggle('fail', !!G.fail);
+  let html;
+  if (G.fail) {
+    html = `<h2>運転見合わせ</h2>
+      <div class="score">事故</div>
+      <p class="lead">${G.fail}</p>`;
+  } else {
+    const s = scoreOf(); const [rk, rt] = rankOf(s.total);
+    const key = stg.id + (G.pro ? '-pro' : '');
+    const prevBest = best[key] || 0; const isBest = s.total > prevBest;
+    if (isBest) { best[key] = s.total; store.set('renketsu-best', best); }
+    html = `<h2>${stg.st}駅　連結完了</h2>
+      <div><div class="score">${s.total}<small style="font-size:1.2rem"> 点</small></div>
+      <div class="rank">ランク ${rk}　<span style="font-weight:400;font-size:1rem;color:var(--muted)">${rt}</span></div>
+      ${isBest ? '<div style="color:var(--led);margin-top:4px">自己ベスト更新' + (G.pro ? '（プロモード）' : '') + '</div>' : ''}</div>
+      <div class="rows">
+        <div><span>一旦停止の位置（手前 ${G.stopGap.toFixed(1)} m）</span><span>${s.stopPts} / 40</span></div>
+        <div><span>連結速度（${G.coupleKmh.toFixed(1)} km/h）</span><span>${s.cp} / 40</span></div>
+        <div><span>誘導にかかった時間（${G.guideT.toFixed(0)} 秒）</span><span>${s.tp} / 20</span></div>
+        ${G.retries ? `<div><span>連結やり直し ${G.retries} 回</span><span>−${s.pen}</span></div>` : ''}
+      </div>`;
+  }
+  html += `<div class="trivia"><b>${stg.st}駅（${stg.line}）</b><br>${stg.trivia}</div>
+    <div class="btns">
+      <button type="button" id="rAgain" class="${G.fail || !next ? 'pri' : ''}">もう一度</button>
+      ${next && !G.fail ? `<button type="button" id="rNext" class="pri">次の駅：${next.st}</button>` : ''}
+      <button type="button" id="rMenu">駅一覧へ</button>
+    </div>`;
+  root.innerHTML = html;
+  $('result').hidden = false;
+  $('rAgain').onclick = () => { $('result').hidden = true; newGame(stg); };
+  if ($('rNext')) $('rNext').onclick = () => { $('result').hidden = true; newGame(next); };
+  $('rMenu').onclick = openMenu;
+  ($('rNext') || $('rAgain')).focus();
+}
+
+/* ---------- メニュー ---------- */
+function openMenu() {
+  $('result').hidden = true; $('menu').hidden = false;
+  input.red = input.green = false;
+  const box = $('cards'); box.innerHTML = '';
+  for (const s of STAGES) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
+    const bs = best[s.id], bp = best[s.id + '-pro'];
+    b.innerHTML = `<div class="ekimei"><div class="nm">${s.st}</div><div class="kn">${s.kana}</div>
+      <div class="lc" style="background:${s.lineCol}"></div>
+      <div class="adj"><span>← ${s.prev}</span><span>${s.next} →</span></div></div>
+      <div class="body"><div class="line">${s.line}</div>
+      <div>停車中：<b>${s.standing.label}</b>（${SERIES[s.standing.s].name}）</div>
+      <div>進入：<b>${s.moving.label}</b>（${SERIES[s.moving.s].name}）</div>
+      <div class="meta"><span>難度 ${'★'.repeat(s.diff)}${'☆'.repeat(3 - s.diff)}</span><span>${bs != null ? '最高 ' + bs + '点' : '未挑戦'}${bp != null ? '／P ' + bp : ''}</span></div></div>`;
+    b.onclick = () => { Snd.init(); $('menu').hidden = true; newGame(s); };
+    box.appendChild(b);
+  }
+}
+$('btnMenu').onclick = () => { if (G && G.state !== 'result') G.state = 'result'; Snd.rumble(0); openMenu(); };
+$('btnSound').onclick = () => {
+  Snd.init(); Snd.on = !Snd.on;
+  if (Snd.ctx && Snd.ctx.state === 'suspended') Snd.ctx.resume();
+  $('btnSound').textContent = Snd.on ? '音 ON' : '音 OFF';
+  $('btnSound').setAttribute('aria-pressed', String(Snd.on));
+};
+$('pro').checked = !!store.get('renketsu-pro', false);
+$('pro').onchange = () => store.set('renketsu-pro', $('pro').checked);
+
+/* ---------- 描画 ---------- */
+function drawCar(c, s, L, isLead, coupler) {
+  const base = 1.0, top = base + s.h, n = s.noseLen;
+  c.beginPath();
+  if (isLead && s.nose === 'long') {
+    c.moveTo(-L, base); c.lineTo(-L, top); c.lineTo(-n, top);
+    c.bezierCurveTo(-n * .42, top, -n * .12, base + s.h * .5, 0, base + .42);
+    c.quadraticCurveTo(.05, base + .1, -.4, base);
+  } else if (isLead && s.nose === 'blunt') {
+    c.moveTo(-L, base); c.lineTo(-L, top); c.lineTo(-n, top);
+    c.quadraticCurveTo(-n * .25, top - .05, -n * .12, base + s.h * .5);
+    c.lineTo(0, base + .55); c.lineTo(0, base);
+  } else if (isLead) {
+    c.moveTo(-L, base); c.lineTo(-L, top); c.lineTo(-n, top);
+    c.lineTo(0, top - .5); c.lineTo(0, base);
+  } else {
+    c.moveTo(-L, base); c.lineTo(-L, top); c.lineTo(0, top); c.lineTo(0, base);
+  }
+  c.closePath();
+  c.save(); c.clip();
+  for (const [a, b, col] of s.bands) { c.fillStyle = col; c.fillRect(-L - 1, base + a * s.h, L + 2, (b - a) * s.h); }
+  if (isLead && s.front) {
+    c.fillStyle = s.front; c.fillRect(-n - .6, base + s.h * .56, n + 1, s.h);
+    if (s.frontStripe) { c.fillStyle = s.frontStripe; c.fillRect(-n - 2.5, base + s.h * .3, n + 3, s.h * .07); }
+  }
+  // 窓
+  const [w0, w1, wc] = s.win;
+  c.fillStyle = wc;
+  const xEnd = isLead ? -n - (s.nose === 'long' ? 1.2 : 1.5) : -1.2;
+  const doors = [];
+  if (s.doors === 'end') doors.push(-L + 1.6);
+  if (s.doors === 'one') doors.push(-L + 1.8);
+  if (s.doors === 'center') doors.push(-L / 2);
+  if (s.doors === 'three') doors.push(-L * .18, -L * .5, -L * .82);
+  for (let x = -L + 1.4; x + s.winW < xEnd; x += s.winStep) {
+    if (doors.some(d => Math.abs(x + s.winW / 2 - d) < 1.2)) continue;
+    c.fillRect(x, base + w0 * s.h, s.winW, (w1 - w0) * s.h);
+  }
+  // 扉
+  c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = .05;
+  for (const d of doors) c.strokeRect(d - .55, base + .05, 1.1, s.h * .78);
+  // 運転台窓
+  c.fillStyle = s.cab;
+  if (isLead && s.nose === 'long') {
+    c.beginPath();
+    c.moveTo(-n * .62, top - .12); c.quadraticCurveTo(-n * .38, top - .15, -n * .24, base + s.h * .72);
+    c.lineTo(-n * .5, base + s.h * .68); c.closePath(); c.fill();
+  } else if (isLead) {
+    c.beginPath();
+    c.moveTo(-n - .9, base + s.h * .62); c.lineTo(-n - .9, base + s.h * .92);
+    c.lineTo(-n + .2, base + s.h * .92); c.lineTo(-n * .2, base + s.h * .6); c.closePath(); c.fill();
+  }
+  // 屋根の影
+  c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(-L - 1, top - .12, L + 2, .12);
+  c.fillStyle = 'rgba(255,255,255,.08)'; c.fillRect(-L - 1, base + s.h * .5, L + 2, s.h * .05);
+  c.restore();
+  c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = .06; c.stroke();
+  // 前照灯
+  if (isLead) {
+    c.fillStyle = '#fff6c8';
+    const hx = s.nose === 'long' ? -1.4 : -.25, hy = s.nose === 'long' ? base + .75 : base + s.h * .32;
+    c.beginPath(); c.ellipse(hx, hy, .28, .12, 0, 0, Math.PI * 2); c.fill();
+  }
+  // 連結器
+  if (isLead && coupler > 0) {
+    const ext = .55 * coupler, cy = base + .45;
+    c.fillStyle = '#3b3f45'; c.fillRect(-.6, cy, .6 + ext, .32);
+    c.fillStyle = '#6c737c'; c.fillRect(ext - .12, cy - .06, .18, .44);
+    if (s.nose === 'long') { // 開いたノーズカバー
+      c.fillStyle = s.bands[0][2]; c.strokeStyle = 'rgba(0,0,0,.5)'; c.lineWidth = .05;
+      c.beginPath(); c.moveTo(-.9, base + .95); c.lineTo(-.9 + .3 * coupler, base + .95 + 1.1 * coupler); c.lineTo(-1.4, base + .95); c.closePath(); c.fill(); c.stroke();
+    }
+  }
+}
+
+function drawTrain(series, cars, frontX, dir, railY, coupler, viewL, viewR) {
+  const s = series, L = s.carLen;
+  ctx.save();
+  ctx.translate(X(frontX), railY);
+  ctx.scale(dir * ppm, -ppm);
+  for (let i = 0; i < cars; i++) {
+    const off = -i * (L + s.gapC);
+    const wx0 = frontX + dir * off, wx1 = frontX + dir * (off - L);
+    if (Math.max(wx0, wx1) < viewL || Math.min(wx0, wx1) > viewR) continue;
+    ctx.save(); ctx.translate(off, 0);
+    // 貫通幌
+    if (i > 0) { ctx.fillStyle = '#2b2f35'; ctx.fillRect(0, 1.2, s.gapC, s.h * .78); }
+    drawCar(ctx, s, L, i === 0, coupler);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+let OX = 0;
+const X = m => OX + m * ppm;
+
+function drawStaff(sx, fy, S, flag, wave, t) {
+  const c = ctx, u = S / 100;
+  c.save(); c.translate(sx, fy);
+  // 影
+  c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(0, 0, 22 * u, 5 * u, 0, 0, Math.PI * 2); c.fill();
+  // 脚
+  c.fillStyle = '#1b2a44';
+  c.fillRect(-9 * u, -46 * u, 8 * u, 46 * u); c.fillRect(2 * u, -46 * u, 8 * u, 46 * u);
+  c.fillStyle = '#0d0f12'; c.fillRect(-11 * u, -4 * u, 11 * u, 4 * u); c.fillRect(2 * u, -4 * u, 12 * u, 4 * u);
+  // 上着
+  c.fillStyle = '#22355a';
+  c.beginPath(); c.moveTo(-14 * u, -44 * u); c.lineTo(-13 * u, -80 * u); c.quadraticCurveTo(0, -86 * u, 13 * u, -80 * u); c.lineTo(14 * u, -44 * u); c.closePath(); c.fill();
+  c.fillStyle = '#d7dde4'; c.fillRect(-2 * u, -82 * u, 4 * u, 10 * u); // シャツ
+  c.fillStyle = '#c9a227'; for (let i = 0; i < 3; i++) c.fillRect(-1 * u, (-70 + i * 9) * u, 2 * u, 2 * u); // ボタン
+  c.fillStyle = '#ffd400'; c.fillRect(-14 * u, -64 * u, 28 * u, 3 * u); // 反射ベルト風
+  // 頭
+  c.fillStyle = '#f0c9a4'; c.beginPath(); c.arc(0, -92 * u, 8.5 * u, 0, Math.PI * 2); c.fill();
+  // 帽子
+  c.fillStyle = '#1a2846'; c.beginPath(); c.ellipse(0, -100 * u, 10 * u, 5 * u, 0, Math.PI, 0); c.fill();
+  c.fillRect(-10 * u, -101 * u, 20 * u, 4 * u);
+  c.fillStyle = '#0c1220'; c.fillRect(2 * u, -98 * u, 12 * u, 2.5 * u); // つば（右向き）
+  c.fillStyle = '#c9a227'; c.fillRect(-6 * u, -101 * u, 12 * u, 1.5 * u);
+  // 左手（体の後ろ側）：使っていない旗を巻いて持つ
+  const idle = flag === 'red' ? '#13985a' : flag === 'green' ? '#d9252b' : null;
+  c.strokeStyle = '#22355a'; c.lineWidth = 6 * u; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(-11 * u, -78 * u); c.lineTo(-15 * u, -52 * u); c.stroke();
+  const furled = (col, x, y) => { c.fillStyle = '#8a6a3a'; c.fillRect(x - 1 * u, y - 26 * u, 2 * u, 34 * u); c.fillStyle = col; c.fillRect(x - 2.2 * u, y - 24 * u, 4.4 * u, 16 * u); };
+  if (!flag) { furled('#d9252b', -16 * u, -46 * u); furled('#13985a', 15 * u, -46 * u); }
+  else furled(idle, -16 * u, -46 * u);
+  // 右手（旗を持つ）
+  let ang; // 肩からの腕の角度（0=右水平, -PI/2=真上）
+  if (flag === 'red') ang = -1.25;
+  else if (flag === 'green') ang = -0.55 + Math.sin(wave) * .75;
+  else ang = 1.35;
+  const shx = 11 * u, shy = -78 * u, al = 30 * u;
+  const hx = shx + Math.cos(ang) * al, hy = shy + Math.sin(ang) * al;
+  c.beginPath(); c.moveTo(shx, shy); c.lineTo(hx, hy); c.stroke();
+  c.fillStyle = '#f0c9a4'; c.beginPath(); c.arc(hx, hy, 3 * u, 0, Math.PI * 2); c.fill();
+  if (flag) {
+    const pa = ang - (flag === 'red' ? .15 : .35), pl = 34 * u;
+    const px = hx + Math.cos(pa) * pl, py = hy + Math.sin(pa) * pl;
+    c.strokeStyle = '#8a6a3a'; c.lineWidth = 2.2 * u; c.beginPath(); c.moveTo(hx, hy); c.lineTo(px, py); c.stroke();
+    // 布
+    const col = flag === 'red' ? '#e0262d' : '#14a862';
+    const fw = 26 * u, fh = 18 * u;
+    const nx = Math.cos(pa), ny = Math.sin(pa); // 竿方向
+    const tx = flag === 'green' ? -Math.sign(Math.cos(wave)) || 1 : 1; // 布のなびく向き
+    const ox = -ny * tx, oy = nx * tx;
+    const flut = Math.sin(t * 14) * 3 * u;
+    c.fillStyle = col; c.beginPath();
+    c.moveTo(px, py);
+    c.quadraticCurveTo(px + ox * fw * .5 + flut, py + oy * fw * .5 - flut, px + ox * fw, py + oy * fw);
+    c.lineTo(px + ox * fw - nx * fh, py + oy * fw - ny * fh);
+    c.quadraticCurveTo(px + ox * fw * .5 - nx * fh - flut, py + oy * fw * .5 - ny * fh + flut, px - nx * fh, py - ny * fh);
+    c.closePath(); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.12)'; c.fill();
+  } else {
+    furled('#13985a', hx, hy + 20 * u);
+  }
+  c.restore();
+}
+
+function drawSign(stg) {
+  const c = ctx;
+  const sw = Math.min(300, W * .44), sh = sw * .36, x = 14, y = 12;
+  c.save();
+  c.strokeStyle = '#59616c'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(x + sw * .2, 0); c.lineTo(x + sw * .2, y); c.moveTo(x + sw * .8, 0); c.lineTo(x + sw * .8, y); c.stroke();
+  c.fillStyle = '#f7f8f6'; c.fillRect(x, y, sw, sh);
+  c.fillStyle = '#111'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  c.font = `900 ${sh * .4}px ${getComputedStyle(document.body).getPropertyValue('--font-ui')}`;
+  c.fillText(stg.st, x + sw / 2, y + sh * .46);
+  c.font = `700 ${sh * .13}px sans-serif`;
+  c.fillText(`${stg.kana}　${stg.roman}`, x + sw / 2, y + sh * .64);
+  c.fillStyle = stg.lineCol; c.fillRect(x, y + sh * .7, sw, sh * .1);
+  c.fillStyle = '#222'; c.font = `500 ${sh * .12}px sans-serif`;
+  c.textAlign = 'left'; c.fillText('← ' + stg.prev, x + 8, y + sh * .94);
+  c.textAlign = 'right'; c.fillText(stg.next + ' →', x + sw - 8, y + sh * .94);
+  c.restore();
+}
+
+function render() {
+  const c = ctx;
+  c.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (!W || !H) return;
+  const t = G ? G.t : performance.now() / 1000;
+  const gap = G ? G.gap : 30;
+  OX = W * (W < 600 ? .3 : .4);
+  const railY = Math.min(H * .86, H * .5 + W * .35);
+  const maxPpm = Math.min((H * .62) / 4.9, (W - OX) / 11);
+  const target = Math.max((W - OX) / 95, Math.min(maxPpm, (W - OX) / (gap + 9)));
+  ppm += (target - ppm) * .06;
+  // 揺れ
+  const sh = G ? G.shake : 0;
+  c.save();
+  if (sh > 0) c.translate((Math.random() - .5) * sh * 10, (Math.random() - .5) * sh * 5);
+
+  // 空
+  const sky = c.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#24324a'); sky.addColorStop(.55, '#6a5b6e'); sky.addColorStop(.8, '#d6926a');
+  c.fillStyle = sky; c.fillRect(-20, -20, W + 40, H + 40);
+  // 遠景ビル（視差）
+  c.fillStyle = '#2b3446';
+  const par = .25, bw = 60;
+  for (let i = -2; i < W / bw + 3; i++) {
+    const wx = i * bw - ((-OX * par) % bw);
+    const seed = Math.abs(Math.sin((i + Math.floor(-OX * par / bw)) * 12.9898) * 43758.5453) % 1;
+    const bh = H * (.12 + seed * .25);
+    c.fillRect(wx, railY - 5 * ppm - bh, bw - 6, bh + 5 * ppm);
+  }
+  // 向かい側ホームの上屋と柱（視差 0.85）
+  const camM = (W * .5 - OX) / ppm;
+  const p2 = (m) => W * .5 + (m - camM) * ppm * .85;
+  const roofY = railY - 6.4 * ppm;
+  c.fillStyle = '#3d4554'; c.fillRect(-20, roofY - .5 * ppm, W + 40, .5 * ppm);
+  c.fillStyle = '#4b5466';
+  const pillarStep = 10;
+  const startM = Math.floor((camM - W / ppm) / pillarStep) * pillarStep;
+  for (let m = startM; m < camM + W / ppm * 1.3; m += pillarStep) {
+    const px = p2(m); if (px < -20 || px > W + 20) continue;
+    c.fillRect(px - .18 * ppm, roofY, .36 * ppm, 5 * ppm);
+  }
+  // 照明
+  c.fillStyle = 'rgba(255,244,214,.85)';
+  for (let m = startM + 5; m < camM + W / ppm * 1.3; m += pillarStep) {
+    const px = p2(m); if (px < -40 || px > W + 40) continue;
+    c.fillRect(px - 1.2 * ppm, roofY, 2.4 * ppm, .15 * ppm);
+  }
+  // 架線
+  c.strokeStyle = 'rgba(20,20,26,.7)'; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(0, railY - 5.6 * ppm); c.lineTo(W, railY - 5.6 * ppm); c.stroke();
+  c.beginPath(); c.moveTo(0, railY - 6.0 * ppm); c.lineTo(W, railY - 6.0 * ppm); c.stroke();
+
+  // 列車
+  const viewL = -OX / ppm - 2, viewR = (W - OX) / ppm + 2;
+  if (G) {
+    drawTrain(G.S, G.stage.standing.cars, 0, 1, railY, G.coupler, viewL, viewR);
+    drawTrain(G.M, G.stage.moving.cars, gap, -1, railY, G.coupler, viewL, viewR);
+    if (G.state === 'coupled' && G.stateT < 1.2) {
+      c.fillStyle = `rgba(255,220,140,${(1 - G.stateT / 1.2) * .6})`;
+      c.beginPath(); c.arc(X(0), railY - 1.6 * ppm, (8 + G.stateT * 60), 0, Math.PI * 2); c.fill();
+    }
+  }
+
+  // 手前ホーム
+  const pTop = railY - 1.25 * ppm;
+  c.fillStyle = '#9aa0a6'; c.fillRect(-20, pTop, W + 40, H - pTop + 20);
+  const surf = c.createLinearGradient(0, pTop, 0, H);
+  surf.addColorStop(0, '#8d939a'); surf.addColorStop(1, '#6f757c');
+  c.fillStyle = surf; c.fillRect(-20, pTop + 4, W + 40, H);
+  c.fillStyle = '#e8e6df'; c.fillRect(-20, pTop, W + 40, 4); // ホーム縁
+  // 点字ブロック
+  const tb = pTop + Math.max(8, .5 * ppm);
+  c.fillStyle = '#f2c200'; c.fillRect(-20, tb, W + 40, Math.max(5, .3 * ppm));
+  c.fillStyle = 'rgba(0,0,0,.12)';
+  const dot = Math.max(5, .3 * ppm);
+  for (let x = ((X(0) % dot) + dot) % dot - dot; x < W; x += dot) c.fillRect(x + dot * .45, tb, 1, dot);
+
+  // 停止位置目標
+  if (G && !G.pro) {
+    for (const [m, lab, col] of [[8, '8', '#ffb43a'], [3, '3', '#ffb43a']]) {
+      const x = X(m); if (x > W + 30) continue;
+      c.fillStyle = '#ddd'; c.fillRect(x - 1.5, pTop - 30, 3, 30 + (tb - pTop));
+      c.fillStyle = '#101418'; c.fillRect(x - 12, pTop - 52, 24, 24);
+      c.fillStyle = col; c.font = '700 14px ' + 'DotGothic16, monospace'; c.textAlign = 'center';
+      c.fillText(lab + 'm', x, pTop - 35);
+    }
+    // 連結面の位置
+    const x0 = X(0);
+    c.fillStyle = 'rgba(255,180,58,.5)'; c.fillRect(X(3), tb + dot + 4, X(8) - X(3), 4);
+    c.fillStyle = '#fff'; c.fillRect(x0 - 1, tb + dot + 2, 2, 8);
+  }
+
+  // 駅員
+  if (G) {
+    const S = Math.min(H * .42, W * .36, Math.max(H * .3, 150));
+    drawStaff(OX - Math.max(S * .3, W * .1), Math.min(H - 8, railY - 1.25 * ppm + S * 1.05), S, G.flagShown, G.flagWave, t);
+  }
+  c.restore();
+  if (G) drawSign(G.stage);
+}
+
+/* ---------- HUD ---------- */
+function hud() {
+  if (!G) return;
+  vGap.textContent = G.gap >= 99.9 ? '99.9 m' : G.gap.toFixed(1).padStart(4, ' ') + ' m';
+  const k = KMH(G.v);
+  vSpd.textContent = k.toFixed(1) + ' km/h';
+  const inGapZone = G.gap >= 3 && G.gap <= 8;
+  ledGap.classList.toggle('ok', inGapZone && G.state !== 'guide');
+  ledSpd.classList.toggle('ok', G.state === 'guide' && k >= 1.5 && k <= 2.5);
+  Snd.rumble(G.state === 'result' ? 0 : k);
+}
+
+/* ---------- ループ ---------- */
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (G && $('menu').hidden && $('result').hidden) update(dt);
+  render(); hud();
+  requestAnimationFrame(frame);
+}
+resize();
+// メニューの背後に見せるデモ画面
+G = null;
+openMenu();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
