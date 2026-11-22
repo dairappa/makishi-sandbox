@@ -280,6 +280,11 @@ SERIES.J221 = { name: '221系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 1.3,
   bands: [[0, .33, '#efebe1'], [.33, .36, '#d9a35a'], [.36, .41, '#6b3a1f'], [.41, .9, '#efebe1'], [.9, 1, '#c9c6be']],
   win: [.45, .83, '#1f262c'], winStep: 2.0, winW: 1.75, cab: '#15181c', doors: 'three',
   front: '#15181c', frontStripe: '#6b3a1f' };
+SERIES.HK8000 = { name: '8000系', carLen: 19, h: 3.75, nose: 'flat', noseLen: .5, gapC: 0.8,
+  bands: [[0, .86, '#5e1a1f'], [.86, 1, '#ece4cf']],
+  win: [.47, .8, '#1d1a1a'], winStep: 1.5, winW: 1.15, cab: '#161313', doors: 'three',
+  front: '#5e1a1f' };
+SERIES.HK8200 = Object.assign({}, SERIES.HK8000, { name: '8200系' });
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -352,6 +357,12 @@ const STAGES = [
     moving:   { s: 'J221', label: '4両', cars: 4 },
     total: '223系6000番台 4両＋221系 4両 → 8両', diff: 2, vApp: 18, decel: .9, react: .45, lag: .45, power: .14, tFull: 15, tZero: 45,
     trivia: '221系は1989年にデビューした国鉄分割後のJR西日本初の近郊形電車、223系はその後継です。223系のうち6000番台などは221系と連結でき、京都を拠点とする嵯峨野線や湖西線では、形の違う2つの形式をつないだ編成が走っています。顔の違う2形式がつながる姿は鉄道ファンにも人気です。このステージで連結作業をする場所は、ゲーム上の想定です。' },
+  { id: 'kobesannomiya', cat: 'kansai', st: '神戸三宮', kana: 'こうべさんのみや', roman: 'Kōbe-sannomiya', lineCol: '#5e1a1f',
+    line: '阪急電鉄 神戸線', prev: '花隈', next: '春日野道',
+    standing: { s: 'HK8000', label: '通勤特急 8両', cars: 8 },
+    moving:   { s: 'HK8200', label: '増結 2両', cars: 2 },
+    total: '8000系 8両＋8200系 2両 → 10両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
+    trivia: '阪急神戸線では、朝ラッシュに新開地から来た8両の通勤特急に、神戸三宮駅で2両を増結して10両にし、梅田（大阪梅田）へ向かう列車がありました。増結用に作られた8200系は、混雑時に座席をたたんで立ち席を増やせる車両です。この連結作業はすでに行われておらず、2025年2月のダイヤ改正で神戸線の10両編成もなくなりました。このステージは当時の作業を再現した場面です。車体は阪急マルーンにアイボリーの屋根まわりです。' },
 
   { id: 'utazu', cat: 'shikoku', st: '宇多津', kana: 'うたづ', roman: 'Utazu', lineCol: '#1e9bd7',
     line: 'JR四国 予讃線・本四備讃線', prev: '坂出', next: '丸亀',
