@@ -307,6 +307,17 @@ SERIES.KH13000 = { name: '13000系', carLen: 18.9, h: 3.75, nose: 'flat', noseLe
   bands: [[0, .34, '#f5f6f3'], [.34, .4, '#00703c'], [.4, .43, '#a8c81c'], [.43, 1, '#f5f6f3']],
   win: [.47, .8, '#1f2428'], winStep: 1.5, winW: 1.15, cab: '#171a1d', doors: 'three',
   front: '#1d2023', frontStripe: '#00703c' };
+// 貨物：機関車とコンテナ貨車
+SERIES.DF200 = { name: 'DF200形', freight: true, carLen: 19.6, base: 1.25, h: 2.75, nose: 'blunt', noseLen: 1.3, gapC: 0.6,
+  bands: [[0, .12, '#2b2f35'], [.12, .78, '#1f3160'], [.78, .84, '#c8102e'], [.84, 1, '#b9bec4']],
+  win: [0, 0, '#000'], noWin: true, cab: '#14181d', couplerY: .72,
+  front: '#b9bec4', frontStripe: '#c8102e', bogies: [-3.2, -9.8, -16.4], vents: true };
+SERIES.EF510 = { name: 'EF510形', freight: true, carLen: 18.4, base: 1.25, h: 2.75, nose: 'blunt', noseLen: 1.3, gapC: 0.6,
+  bands: [[0, .12, '#2b2f35'], [.12, .82, '#c8102e'], [.82, .86, '#f2f2f2'], [.86, 1, '#9aa1a8']],
+  win: [0, 0, '#000'], noWin: true, cab: '#14181d', couplerY: .72,
+  front: '#c8102e', frontStripe: '#f2f2f2', bogies: [-4.2, -14.2], vents: true };
+SERIES.KOKI = { name: 'コキ107形', freight: true, kind: 'koki', carLen: 19.6, h: 3.6, gapC: 0.6, couplerY: .72,
+  bands: [[0, 1, '#3d4248']], win: [0, 0, '#000'], bogies: [-2.3, -17.3] };
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -441,6 +452,18 @@ const STAGES = [
     moving:   { s: 'M1800', label: '増結 2両', cars: 2 },
     total: '1200系 6両＋1800系 2両 → 8両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '名鉄の1800系は、ラッシュ時に6両の1200系（パノラマsuper）につないで8両の特急にするための2両編成として作られました。1200系は、前の2両が特別車、残り4両が一般車です。増結作業をする場所は、ゲーム上の想定です。' },
+  { id: 'goryokaku', cat: 'freight', freight: true, st: '五稜郭', kana: 'ごりょうかく', roman: 'Goryōkaku', lineCol: '#2e9b4f',
+    line: 'JR北海道 函館本線（JR貨物 五稜郭駅）', prev: '函館', next: '桔梗',
+    standing: { s: 'KOKI', label: 'コンテナ貨車 20両', cars: 20 },
+    moving:   { s: 'DF200', label: 'DF200形ディーゼル機関車', cars: 1 },
+    total: 'DF200形＋コキ107形 20両（コンテナ列車）', diff: 2, vApp: 12, decel: .9, react: .45, lag: .4, power: .16,
+    trivia: '本州から青函トンネルを通って来た貨物列車は、電気機関車EH800形に引かれて五稜郭駅に着きます。北海道の中は電化されていない区間が多いため、ここからはディーゼル機関車DF200形「ECO-POWER RED BEAR」が引きます。EH800形もDF200形も、函館の五稜郭機関区に所属しています。車体の色とコンテナの色は単純化しています。' },
+  { id: 'higashiaomori', cat: 'freight', freight: true, st: '東青森', kana: 'ひがしあおもり', roman: 'Higashi-Aomori', lineCol: '#0072bc',
+    line: '青い森鉄道線（JR貨物 東青森駅）', prev: '青森', next: '小柳',
+    standing: { s: 'KOKI', label: 'コンテナ貨車 20両', cars: 20 },
+    moving:   { s: 'EF510', label: 'EF510形電気機関車', cars: 1 },
+    total: 'EF510形＋コキ107形 20両（コンテナ列車）', diff: 2, vApp: 13, decel: .85, react: .5, lag: .4, power: .16,
+    trivia: '北海道と本州を結ぶ貨物列車は、東青森駅で機関車を付け替えます。青函トンネルを通ってきたEH800形を切り離し、日本海側を走るEF510形「ECO-POWER レッドサンダー」につなぎます。北海道の帯広から大阪の吹田まで、4両の機関車をリレーして約31時間で走る列車もあります。車体の色とコンテナの色は単純化しています。' },
   { id: 'kayashima-rescue', cat: 'emergency', rescue: true, st: '萱島', kana: 'かやしま', roman: 'Kayashima', lineCol: '#00703c',
     line: '京阪電気鉄道 京阪本線', prev: '大和田', next: '寝屋川市',
     standing: { s: 'KH13000', label: '故障した京阪電車 7両', cars: 7 },
@@ -552,7 +575,7 @@ function newGame(stage) {
   btnRed.disabled = false; btnGreen.disabled = true;
   resetInput();
   $('hud').hidden = G.pro;
-  say((stage.rescue ? `【非常時】${stage.standing.label}を救援します。` : '') + `<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
+  say((stage.rescue ? `【非常時】${stage.standing.label}を救援します。` : '') + `<em>${stage.moving.label}</em>${stage.moving.label.includes(G.M.name) ? '' : '（' + G.M.name + '）'}が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
   Snd.whistle(.5, false);
 }
 
@@ -672,7 +695,7 @@ function contact() {
   G.shake = Math.min(1, k / 4); G.flagShown = null;
   btnRed.disabled = true; btnGreen.disabled = true;
   Snd.clunk(Math.min(1, .3 + k / 5));
-  say(`<em>ガチャン！</em> 連結完了（${k.toFixed(1)} km/h）。${st().total.split('→').pop().trim()}になりました。`);
+  say(`<em>ガチャン！</em> 連結完了（${k.toFixed(1)} km/h）。${st().total.split('→').pop().trim()}になりました。${G.stage.freight ? '係員がブレーキ管（エアホース）をつなぎます。' : ''}`);
 }
 const st = () => G.stage;
 
@@ -758,7 +781,7 @@ function openMenu() {
     const cat = s.cat || 'express';
     if (cat !== lastCat) {
       const h = document.createElement('h3'); h.className = 'grp';
-      h.textContent = { emergency: '非常時（救援連結）', commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州', hokkaido: '北海道', chubu: '中部' }[cat] || '特急・新幹線';
+      h.textContent = { freight: '貨物列車', emergency: '非常時（救援連結）', commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州', hokkaido: '北海道', chubu: '中部' }[cat] || '特急・新幹線';
       box.appendChild(h); lastCat = cat;
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
@@ -786,7 +809,10 @@ $('pro').onchange = () => store.set('renketsu-pro', $('pro').checked);
 
 /* ---------- 描画 ---------- */
 function drawCar(c, s, L, isLead, coupler, dead) {
-  const base = 1.0, top = base + s.h, n = s.noseLen;
+  if (s.freight) drawBogies(c, s);
+  if (s.kind === 'koki') return drawKoki(c, s, L, isLead, coupler);
+  const base = s.base || 1.0, top = base + s.h, n = s.noseLen;
+  if (s.freight) { c.fillStyle = '#25282c'; c.fillRect(-L + .3, .78, L - .6, base - .78); }
   c.beginPath();
   if (isLead && s.nose === 'long') {
     c.moveTo(-L, base); c.lineTo(-L, top); c.lineTo(-n, top);
@@ -820,7 +846,7 @@ function drawCar(c, s, L, isLead, coupler, dead) {
   if (s.doors === 'three') doors.push(-L * .18, -L * .5, -L * .82);
   if (s.doors === 'two') doors.push(-L * .22, -L * .78);
   if (s.doors === 'four') doors.push(-L * .12, -L * .375, -L * .625, -L * .88);
-  for (let x = -L + 1.4; x + s.winW < xEnd; x += s.winStep) {
+  if (!s.noWin) for (let x = -L + 1.4; x + s.winW < xEnd; x += s.winStep) {
     if (doors.some(d => Math.abs(x + s.winW / 2 - d) < 1.2)) continue;
     c.fillRect(x, base + w0 * s.h, s.winW, (w1 - w0) * s.h);
   }
@@ -837,6 +863,13 @@ function drawCar(c, s, L, isLead, coupler, dead) {
     c.beginPath();
     c.moveTo(-n - .9, base + s.h * .62); c.lineTo(-n - .9, base + s.h * .92);
     c.lineTo(-n + .2, base + s.h * .92); c.lineTo(-n * .2, base + s.h * .6); c.closePath(); c.fill();
+  }
+  // 機関車のルーバー（通風口）
+  if (s.vents) {
+    c.fillStyle = 'rgba(0,0,0,.28)';
+    for (let x = -L + 2; x < -n - 2.5; x += 2.2) {
+      for (let k = 0; k < 6; k++) c.fillRect(x, base + s.h * (.45 + k * .05), 1.5, s.h * .02);
+    }
   }
   // 屋根の影
   c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(-L - 1, top - .12, L + 2, .12);
@@ -855,13 +888,46 @@ function drawCar(c, s, L, isLead, coupler, dead) {
   }
   // 連結器
   if (isLead && coupler > 0) {
-    const ext = .55 * coupler, cy = base + .45;
+    const ext = .55 * coupler, cy = s.couplerY != null ? s.couplerY : base + .45;
     c.fillStyle = '#3b3f45'; c.fillRect(-.6, cy, .6 + ext, .32);
     c.fillStyle = '#6c737c'; c.fillRect(ext - .12, cy - .06, .18, .44);
     if (s.nose === 'long') { // 開いたノーズカバー
       c.fillStyle = s.bands[0][2]; c.strokeStyle = 'rgba(0,0,0,.5)'; c.lineWidth = .05;
       c.beginPath(); c.moveTo(-.9, base + .95); c.lineTo(-.9 + .3 * coupler, base + .95 + 1.1 * coupler); c.lineTo(-1.4, base + .95); c.closePath(); c.fill(); c.stroke();
     }
+  }
+}
+
+function drawBogies(c, s) {
+  for (const bx of s.bogies || []) {
+    c.fillStyle = '#2a2d31'; c.fillRect(bx - 1.4, .25, 2.8, .55);
+    c.fillStyle = '#16181b';
+    for (const w of [-.95, .95]) { c.beginPath(); c.arc(bx + w, .43, .43, 0, Math.PI * 2); c.fill(); }
+    c.fillStyle = '#6a7077';
+    for (const w of [-.95, .95]) { c.beginPath(); c.arc(bx + w, .43, .12, 0, Math.PI * 2); c.fill(); }
+  }
+}
+const BOX_COLORS = ['#a8433a', '#2f6f9f', '#7d6a3a', '#3f7f4a', '#a8433a', '#c7a43a', '#2f6f9f', '#8a8f95', '#3f7f4a', '#a8433a'];
+let CAR_INDEX = 0;
+function drawKoki(c, s, L, isLead, coupler) {
+  // 台枠と床
+  c.fillStyle = '#3d4248'; c.fillRect(-L + .2, .95, L - .4, .2);
+  c.beginPath(); c.moveTo(-L + 3.8, .95); c.lineTo(-L + 5.2, .6); c.lineTo(-5.2, .6); c.lineTo(-3.8, .95); c.closePath(); c.fill();
+  c.fillStyle = '#25282c'; c.fillRect(-L, .62, .3, .45); c.fillRect(-.3, .62, .3, .45);
+  // 12フィートコンテナ 5個
+  for (let k = 0; k < 5; k++) {
+    const x0 = -L + .5 + k * 3.74, col = BOX_COLORS[(CAR_INDEX * 5 + k * 3) % BOX_COLORS.length];
+    if (CAR_INDEX % 7 === 3 && k === 2) continue; // 空きスペース
+    c.fillStyle = col; c.fillRect(x0, 1.15, 3.62, 2.5);
+    c.fillStyle = 'rgba(0,0,0,.18)';
+    for (let r = x0 + .25; r < x0 + 3.5; r += .3) c.fillRect(r, 1.2, .04, 2.38);
+    c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(x0, 3.55, 3.62, .1);
+    c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = .05; c.strokeRect(x0, 1.15, 3.62, 2.5);
+  }
+  if (isLead && coupler > 0) {
+    const ext = .55 * coupler;
+    c.fillStyle = '#3b3f45'; c.fillRect(-.6, s.couplerY, .6 + ext, .3);
+    c.fillStyle = '#6c737c'; c.fillRect(ext - .12, s.couplerY - .06, .18, .42);
   }
 }
 
@@ -876,7 +942,9 @@ function drawTrain(series, cars, frontX, dir, railY, coupler, viewL, viewR, dead
     if (Math.max(wx0, wx1) < viewL || Math.min(wx0, wx1) > viewR) continue;
     ctx.save(); ctx.translate(off, 0);
     // 貫通幌
-    if (i > 0) { ctx.fillStyle = '#2b2f35'; ctx.fillRect(0, 1.2, s.gapC, s.h * .78); }
+    if (i > 0 && !s.freight) { ctx.fillStyle = '#2b2f35'; ctx.fillRect(0, 1.2, s.gapC, s.h * .78); }
+    if (i > 0 && s.freight) { ctx.fillStyle = '#3b3f45'; ctx.fillRect(-.1, s.couplerY, s.gapC + .2, .28); }
+    CAR_INDEX = i;
     drawCar(ctx, s, L, i === 0, coupler, dead);
     ctx.restore();
   }
@@ -1030,19 +1098,38 @@ function render() {
     }
   }
 
-  // 手前ホーム
-  const pTop = railY - 1.25 * ppm;
-  c.fillStyle = '#9aa0a6'; c.fillRect(-20, pTop, W + 40, H - pTop + 20);
-  const surf = c.createLinearGradient(0, pTop, 0, H);
-  surf.addColorStop(0, '#8d939a'); surf.addColorStop(1, '#6f757c');
-  c.fillStyle = surf; c.fillRect(-20, pTop + 4, W + 40, H);
-  c.fillStyle = '#e8e6df'; c.fillRect(-20, pTop, W + 40, 4); // ホーム縁
-  // 点字ブロック
-  const tb = pTop + Math.max(8, .5 * ppm);
-  c.fillStyle = '#f2c200'; c.fillRect(-20, tb, W + 40, Math.max(5, .3 * ppm));
-  c.fillStyle = 'rgba(0,0,0,.12)';
-  const dot = Math.max(5, .3 * ppm);
-  for (let x = ((X(0) % dot) + dot) % dot - dot; x < W; x += dot) c.fillRect(x + dot * .45, tb, 1, dot);
+  const yard = !!(G && G.stage.freight);
+  let pTop, tb, dot;
+  if (yard) {
+    // 貨物駅の構内：レールと砕石、手前は作業用の通路
+    c.fillStyle = '#5b544c'; c.fillRect(-20, railY - 4, W + 40, H - railY + 24);
+    c.fillStyle = '#8b8178';
+    for (let x = ((X(0) % 9) + 9) % 9 - 9; x < W; x += 9) c.fillRect(x, railY + 2, 5, 3);
+    c.fillStyle = '#4a3a2c';
+    const sl = Math.max(6, .6 * ppm);
+    for (let x = ((X(0) % sl) + sl) % sl - sl; x < W; x += sl) c.fillRect(x, railY - 1, sl * .35, 6);
+    c.fillStyle = '#b9bdc2'; c.fillRect(-20, railY - 3, W + 40, 3);
+    pTop = railY + Math.max(14, .35 * ppm);
+    const path = c.createLinearGradient(0, pTop, 0, H);
+    path.addColorStop(0, '#7b746b'); path.addColorStop(1, '#5f5a53');
+    c.fillStyle = path; c.fillRect(-20, pTop, W + 40, H);
+    c.fillStyle = '#e6e1d6'; c.fillRect(-20, pTop, W + 40, 3); // 通路の白線
+    tb = pTop + 4; dot = 4;
+  } else {
+    // 手前ホーム
+    pTop = railY - 1.25 * ppm;
+    c.fillStyle = '#9aa0a6'; c.fillRect(-20, pTop, W + 40, H - pTop + 20);
+    const surf = c.createLinearGradient(0, pTop, 0, H);
+    surf.addColorStop(0, '#8d939a'); surf.addColorStop(1, '#6f757c');
+    c.fillStyle = surf; c.fillRect(-20, pTop + 4, W + 40, H);
+    c.fillStyle = '#e8e6df'; c.fillRect(-20, pTop, W + 40, 4); // ホーム縁
+    // 点字ブロック
+    tb = pTop + Math.max(8, .5 * ppm);
+    c.fillStyle = '#f2c200'; c.fillRect(-20, tb, W + 40, Math.max(5, .3 * ppm));
+    c.fillStyle = 'rgba(0,0,0,.12)';
+    dot = Math.max(5, .3 * ppm);
+    for (let x = ((X(0) % dot) + dot) % dot - dot; x < W; x += dot) c.fillRect(x + dot * .45, tb, 1, dot);
+  }
 
   // 停止位置目標
   if (G && !G.pro) {
@@ -1062,7 +1149,7 @@ function render() {
   // 駅員
   if (G) {
     const S = Math.min(H * .42, W * .36, Math.max(H * .3, 150));
-    drawStaff(OX - Math.max(S * .3, W * .1), Math.min(H - 8, railY - 1.25 * ppm + S * 1.05), S, G.flagShown, G.flagWave, t);
+    drawStaff(OX - Math.max(S * .3, W * .1), Math.min(H - 8, pTop + S * (yard ? .5 : 1.05)), S, G.flagShown, G.flagWave, t);
   }
   c.restore();
   if (G) drawSign(G.stage);
