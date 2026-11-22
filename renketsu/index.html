@@ -315,6 +315,34 @@ SERIES.E233S = { name: 'E233系7000番台', carLen: 20, h: 3.65, nose: 'flat', n
   bands: [[0, .36, '#c6ccd1'], [.36, .41, '#00a26b'], [.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
   win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#14181c', doors: 'four',
   front: '#16191d', frontStripe: '#00a26b' };
+SERIES.TM15000 = { name: '東京メトロ15000系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#009bbf'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#009bbf' };
+SERIES.E231T = { name: 'E231系800番台', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#009bbf'], [.39, .43, '#f2c200'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#009bbf' };
+SERIES.TM16000 = { name: '東京メトロ16000系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#00a854'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#16191d', frontStripe: '#00a854' };
+SERIES.OD4000 = { name: '小田急4000形', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#1d4e9e'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1c2024', frontStripe: '#1d4e9e' };
+SERIES.TO5500 = { name: '都営5500形', carLen: 18, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#e85298'], [.39, .43, '#c8102e'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'three',
+  front: '#e85298', frontStripe: '#c8102e' };
+SERIES.TM17000 = { name: '東京メトロ17000系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#9c5e31'], [.39, .43, '#c1a470'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#c1a470' };
+SERIES.TK5050 = { name: '東急5050系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#d7001a'], [.39, .43, '#f39800'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1c2024', frontStripe: '#d7001a' };
 // 貨物：機関車とコンテナ貨車
 SERIES.DF200 = { name: 'DF200形', freight: true, carLen: 19.6, base: 1.25, h: 2.75, nose: 'blunt', noseLen: 1.3, gapC: 0.6,
   bands: [[0, .12, '#2b2f35'], [.12, .78, '#1f3160'], [.78, .84, '#c8102e'], [.84, 1, '#b9bec4']],
@@ -496,6 +524,36 @@ const STAGES = [
     moving:   { s: 'KT9020', label: '救援の近鉄電車 2両', cars: 2 },
     total: '近鉄9820系 6両＋9020系 2両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
     trivia: '大和西大寺は奈良線・京都線・橿原線が集まる近鉄の大きな乗り換え駅で、隣に車両基地があります。9820系（6両）と9020系（2両）は「シリーズ21」と呼ばれる仲間で、白・茶色・黄色の同じ塗装です。ふだんから連結して走ることができます。このステージは、故障した6両を2両の電車が救援するという非常時を想定した架空の場面です。' },
+  { id: 'nakano-rescue', cat: 'emergency', rescue: true, st: '中野', kana: 'なかの', roman: 'Nakano', lineCol: '#009bbf',
+    line: '東京メトロ東西線・JR東日本 中央・総武線各駅停車', prev: '東中野', next: '高円寺',
+    standing: { s: 'E231T', label: '故障したJRの電車 10両', cars: 10 },
+    moving:   { s: 'TM15000', label: '救援の東西線の電車 10両', cars: 10 },
+    total: 'E231系800番台 10両＋東京メトロ15000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '東京メトロ東西線とJR中央・総武線各駅停車は中野駅でつながり、相互直通運転をしています。JRのE231系800番台は、地下鉄に乗り入れるために作られた車両です。東西線の15000系は、混雑対策で扉の幅を広くした「ワイドドア」の車両です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'yoyogiuehara-rescue', cat: 'emergency', rescue: true, st: '代々木上原', kana: 'よよぎうえはら', roman: 'Yoyogi-Uehara', lineCol: '#1d4e9e',
+    line: '小田急電鉄 小田原線・東京メトロ千代田線', prev: '東北沢', next: '代々木八幡',
+    standing: { s: 'OD4000', label: '故障した小田急の電車 10両', cars: 10 },
+    moving:   { s: 'TM16000', label: '救援の千代田線の電車 10両', cars: 10 },
+    total: '小田急4000形 10両＋東京メトロ16000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '小田急線と東京メトロ千代田線は代々木上原駅でつながり、相互直通運転をしています。小田急4000形は千代田線への乗り入れにも使われる車両で、青い帯が目印です。千代田線の16000系は緑の帯をまとっています。このステージは非常時を想定した架空の場面です。' },
+  { id: 'sengakuji-rescue', cat: 'emergency', rescue: true, st: '泉岳寺', kana: 'せんがくじ', roman: 'Sengakuji', lineCol: '#e85298',
+    line: '都営地下鉄浅草線・京急本線', prev: '品川', next: '三田',
+    standing: { s: 'TO5500', label: '故障した浅草線の電車 8両', cars: 8 },
+    moving:   { s: 'K1000', label: '救援の京急の電車 8両', cars: 8 },
+    total: '都営5500形 8両＋京急新1000形 8両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '都営浅草線と京急線は泉岳寺駅でつながり、相互直通運転をしています。都営5500形は2018年に登場した浅草線の車両で、前面は歌舞伎の隈取りをイメージしたデザインです。京急の電車は赤い車体が目印です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'shibuya-rescue', cat: 'emergency', rescue: true, st: '渋谷', kana: 'しぶや', roman: 'Shibuya', lineCol: '#9c5e31',
+    line: '東急東横線・東京メトロ副都心線', prev: '代官山', next: '明治神宮前',
+    standing: { s: 'TK5050', label: '故障した東急の電車 10両', cars: 10 },
+    moving:   { s: 'TM17000', label: '救援の副都心線の電車 10両', cars: 10 },
+    total: '東急5050系 10両＋東京メトロ17000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '東急東横線と東京メトロ副都心線は、2013年から渋谷駅の地下でつながり、相互直通運転をしています。東京メトロの17000系は2021年に登場した、有楽町線・副都心線の車両です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'osakanamba-rescue', cat: 'emergency', rescue: true, st: '大阪難波', kana: 'おおさかなんば', roman: 'Ōsaka-Namba', lineCol: '#0a5fa8',
+    line: '阪神なんば線・近鉄難波線', prev: '桜川', next: '近鉄日本橋',
+    standing: { s: 'HS1000', label: '故障した阪神の電車 6両', cars: 6 },
+    moving:   { s: 'KT9820', label: '救援の近鉄の電車 6両', cars: 6 },
+    total: '阪神1000系 6両＋近鉄9820系 6両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '2009年に阪神なんば線が開業し、大阪難波駅で阪神線と近鉄線がつながりました。神戸三宮から近鉄奈良まで、阪神と近鉄の電車が乗り入れています。このステージは、故障した阪神の電車を近鉄の電車が救援する、という非常時を想定した架空の場面です。' },
 ];
 
 const placeOf = s => s.place || s.st + '駅';
