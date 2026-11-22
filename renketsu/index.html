@@ -253,7 +253,26 @@ const SERIES = {
         bands: [[0, .3, '#c4ccd3'], [.3, .37, '#d4262f'], [.37, 1, '#c4ccd3']],
         win: [.45, .74, '#1e2a30'], winStep: 1.75, winW: 1.3, cab: '#1e2a30', doors: 'center',
         front: '#d4262f' },
+  // 北海道・中部
+  H733: { name: '733系', carLen: 21, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+        bands: [[0, .36, '#c6ccd1'], [.36, .42, '#6cbb3c'], [.42, .44, '#2d7a3a'], [.44, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+        win: [.47, .8, '#20272e'], winStep: 1.5, winW: 1.2, cab: '#16191d', doors: 'three',
+        front: '#25292d', frontStripe: '#6cbb3c' },
+  H100: { name: 'H100形', carLen: 21, h: 3.6, nose: 'blunt', noseLen: 1.4, gapC: 0.7,
+        bands: [[0, .32, '#cfd4d8'], [.32, .37, '#2e9b4f'], [.37, .4, '#f7f7f5'], [.4, 1, '#cfd4d8']],
+        win: [.45, .76, '#1f262c'], winStep: 1.6, winW: 1.2, cab: '#181c20', doors: 'end',
+        front: '#f2c200' },
+  HC85: { name: 'HC85系', carLen: 21, h: 3.6, nose: 'blunt', noseLen: 2.0, gapC: 0.7,
+        bands: [[0, .3, '#f4f4f2'], [.3, .33, '#c9a55a'], [.33, .37, '#e86a10'], [.37, 1, '#f4f4f2']],
+        win: [.45, .77, '#1d232a'], winStep: 1.7, winW: 1.35, cab: '#15191d', doors: 'one',
+        front: '#c9a55a' },
+  M1200: { name: '1200系', carLen: 19, h: 3.75, nose: 'flat', noseLen: .6, gapC: 0.8,
+        bands: [[0, .34, '#f3f3f1'], [.34, .42, '#d7192d'], [.42, 1, '#f3f3f1']],
+        win: [.46, .78, '#22272d'], winStep: 1.6, winW: 1.3, cab: '#1c2024', doors: 'two',
+        front: '#d7192d' },
 };
+
+SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
 const STAGES = [
@@ -344,6 +363,31 @@ const STAGES = [
     moving:   { s: '783M', label: 'みどり', cars: 4 },
     total: '783系「かもめ」＋「みどり」', diff: 2, vApp: 21, decel: .85, react: .55, lag: .5, power: .13,
     trivia: '長崎本線と佐世保線が分かれる肥前山口駅では、長崎行きの特急「かもめ」と佐世保行きの特急「みどり」の分割・併結が行われていました。この併結は2011年に廃止され、駅名も2022年に「江北」へ変わっています。このステージは、当時の作業を再現した場面です。車両の色は単純化しています。' },
+
+  { id: 'sapporo-depot', cat: 'hokkaido', st: '札幌運転所', place: '札幌運転所（車両基地）', kana: 'さっぽろうんてんしょ', roman: 'Sapporo Depot', lineCol: '#2e9b4f',
+    line: 'JR北海道 函館本線沿い（車両基地）', prev: '小樽方面', next: '札幌方面',
+    standing: { s: 'H733', label: '3両', cars: 3 },
+    moving:   { s: 'H733', label: '3両', cars: 3 },
+    total: '733系 3両＋3両 → 6両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
+    trivia: '新千歳空港と札幌・小樽方面を結ぶ快速「エアポート」は6両で走り、733系は3両編成を2本つないで使われます。このステージは、車両基地で快速エアポート用の6両を組む作業を想定した場面です。' },
+  { id: 'naebo-depot', cat: 'hokkaido', st: '苗穂運転所', place: '苗穂運転所（車両基地）', kana: 'なえぼうんてんしょ', roman: 'Naebo Depot', lineCol: '#2e9b4f',
+    line: 'JR北海道 函館本線沿い（車両基地）', prev: '札幌方面', next: '岩見沢方面',
+    standing: { s: 'H100', label: '1両', cars: 1 },
+    moving:   { s: 'H100', label: '1両', cars: 1 },
+    total: 'H100形 1両＋1両 → 2両', diff: 2, vApp: 17, decel: .8, react: .5, lag: .45, power: .17, tFull: 15, tZero: 45,
+    trivia: 'H100形「DECMO」は、エンジンで発電してモーターで走る電気式気動車です。1両でも走れ、乗客の多い列車では2両以上つないで走ります。古いキハ40形を置き換えるため、北海道各地に投入されました。このステージは、車両基地での連結作業を想定した場面です。1両だけの軽い車両なので、力行の効きが早めです。' },
+  { id: 'gifu', cat: 'chubu', st: '岐阜', kana: 'ぎふ', roman: 'Gifu', lineCol: '#f08a00',
+    line: 'JR東海 東海道本線・高山本線', prev: '西岐阜', next: '木曽川',
+    standing: { s: 'HC85', label: 'ひだ（名古屋発）', cars: 4 },
+    moving:   { s: 'HC85', label: 'ひだ（大阪発）', cars: 4 },
+    total: 'HC85系「ひだ」大阪発着＋名古屋発着', diff: 3, vApp: 15, decel: .8, react: .6, lag: .7, power: .11,
+    trivia: '大阪発着の特急「ひだ」は、岐阜駅で名古屋発着の「ひだ」と連結・切り離しをして高山へ向かいます。岐阜駅には連結用の誘導信号機がないため、大阪発の列車はお客さんを乗せたまま引上線でいったん待機し、名古屋発の列車が着いてから、係員の誘導でホームへ戻って連結します。まさにこのゲームの場面です。' },
+  { id: 'meitetsugifu', cat: 'chubu', st: '名鉄岐阜', kana: 'めいてつぎふ', roman: 'Meitetsu-Gifu', lineCol: '#d7192d',
+    line: '名古屋鉄道 名古屋本線・各務原線', prev: '加納', next: '田神',
+    standing: { s: 'M1200', label: 'パノラマsuper 6両', cars: 6 },
+    moving:   { s: 'M1800', label: '増結 2両', cars: 2 },
+    total: '1200系 6両＋1800系 2両 → 8両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
+    trivia: '名鉄の1800系は、ラッシュ時に6両の1200系（パノラマsuper）につないで8両の特急にするための2両編成として作られました。1200系は、前の2両が特別車、残り4両が一般車です。増結作業をする場所は、ゲーム上の想定です。' },
 ];
 
 const placeOf = s => s.place || s.st + '駅';
@@ -643,7 +687,7 @@ function openMenu() {
     const cat = s.cat || 'express';
     if (cat !== lastCat) {
       const h = document.createElement('h3'); h.className = 'grp';
-      h.textContent = { commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州' }[cat] || '特急・新幹線';
+      h.textContent = { commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州', hokkaido: '北海道', chubu: '中部' }[cat] || '特急・新幹線';
       box.appendChild(h); lastCat = cat;
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
@@ -703,6 +747,7 @@ function drawCar(c, s, L, isLead, coupler) {
   if (s.doors === 'one') doors.push(-L + 1.8);
   if (s.doors === 'center') doors.push(-L / 2);
   if (s.doors === 'three') doors.push(-L * .18, -L * .5, -L * .82);
+  if (s.doors === 'two') doors.push(-L * .22, -L * .78);
   if (s.doors === 'four') doors.push(-L * .12, -L * .375, -L * .625, -L * .88);
   for (let x = -L + 1.4; x + s.winW < xEnd; x += s.winStep) {
     if (doors.some(d => Math.abs(x + s.winW / 2 - d) < 1.2)) continue;
