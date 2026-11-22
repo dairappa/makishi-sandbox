@@ -272,6 +272,14 @@ const SERIES = {
         front: '#d7192d' },
 };
 
+SERIES.J223 = { name: '223系6000番台', carLen: 20, h: 3.65, nose: 'flat', noseLen: .8, gapC: 0.7,
+  bands: [[0, .34, '#c4cacf'], [.34, .37, '#d8b47a'], [.37, .41, '#7a3e1d'], [.41, .44, '#9aa1a7'], [.44, .9, '#c4cacf'], [.9, 1, '#a9b0b6']],
+  win: [.47, .82, '#20272e'], winStep: 1.6, winW: 1.3, cab: '#16191d', doors: 'three',
+  front: '#1d2024', frontStripe: '#7a3e1d' };
+SERIES.J221 = { name: '221系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 1.3, gapC: 0.7,
+  bands: [[0, .33, '#efebe1'], [.33, .36, '#d9a35a'], [.36, .41, '#6b3a1f'], [.41, .9, '#efebe1'], [.9, 1, '#c9c6be']],
+  win: [.45, .83, '#1f262c'], winStep: 2.0, winW: 1.75, cab: '#15181c', doors: 'three',
+  front: '#15181c', frontStripe: '#6b3a1f' };
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -338,6 +346,12 @@ const STAGES = [
     moving:   { s: 'HS1000', label: '快速急行 6両', cars: 6 },
     total: '1000系 6両＋2両 → 8両', diff: 1, vApp: 17, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '阪神1000系は、6両の基本編成と2両の増結編成を組み合わせて走れるように作られています。近鉄奈良線へ直通する快速急行では、かつて尼崎駅で増結・切り離しをしていました。2020年と2022年のダイヤ改正で8両のまま走るようになり、尼崎での連結作業はなくなっています。' },
+  { id: 'kyoto-221', cat: 'kansai', st: '京都', kana: 'きょうと', roman: 'Kyōto', lineCol: '#0072bc',
+    line: 'JR西日本 嵯峨野線・湖西線', prev: '梅小路京都西', next: '山科',
+    standing: { s: 'J223', label: '4両', cars: 4 },
+    moving:   { s: 'J221', label: '4両', cars: 4 },
+    total: '223系6000番台 4両＋221系 4両 → 8両', diff: 2, vApp: 18, decel: .9, react: .45, lag: .45, power: .14, tFull: 15, tZero: 45,
+    trivia: '221系は1989年にデビューした国鉄分割後のJR西日本初の近郊形電車、223系はその後継です。223系のうち6000番台などは221系と連結でき、京都を拠点とする嵯峨野線や湖西線では、形の違う2つの形式をつないだ編成が走っています。顔の違う2形式がつながる姿は鉄道ファンにも人気です。このステージで連結作業をする場所は、ゲーム上の想定です。' },
 
   { id: 'utazu', cat: 'shikoku', st: '宇多津', kana: 'うたづ', roman: 'Utazu', lineCol: '#1e9bd7',
     line: 'JR四国 予讃線・本四備讃線', prev: '坂出', next: '丸亀',
