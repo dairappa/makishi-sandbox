@@ -343,6 +343,18 @@ SERIES.TK5050 = { name: '東急5050系', carLen: 20, h: 3.65, nose: 'flat', nose
   bands: [[0, .35, '#c6ccd1'], [.35, .39, '#d7001a'], [.39, .43, '#f39800'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
   win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
   front: '#1c2024', frontStripe: '#d7001a' };
+SERIES.E353 = { name: 'E353系', carLen: 20.5, h: 3.6, nose: 'blunt', noseLen: 3.0, gapC: 0.7,
+  bands: [[0, .34, '#f2f3f4'], [.34, .4, '#5c2d91'], [.4, .9, '#f2f3f4'], [.9, 1, '#b8bdc2']],
+  win: [.46, .78, '#1d2229'], winStep: 1.75, winW: 1.4, cab: '#15181c', doors: 'one',
+  front: '#1c1f24', frontStripe: '#5c2d91' };
+SERIES.TB500 = { name: '東武500系', carLen: 20, h: 3.6, nose: 'blunt', noseLen: 2.4, gapC: 0.7,
+  bands: [[0, .42, '#d6c7a5'], [.42, .84, '#2a2a2d'], [.84, 1, '#d6c7a5']],
+  win: [.47, .8, '#16171a'], winStep: 1.75, winW: 1.4, cab: '#111214', doors: 'one',
+  front: '#1b1c1e', frontStripe: '#d6c7a5' };
+SERIES.E531 = { name: 'E531系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .36, '#c6ccd1'], [.36, .4, '#004ea2'], [.4, .43, '#4fa3e0'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#17191c', frontStripe: '#004ea2' };
 // 貨物：機関車とコンテナ貨車
 SERIES.DF200 = { name: 'DF200形', freight: true, carLen: 19.6, base: 1.25, h: 2.75, nose: 'blunt', noseLen: 1.3, gapC: 0.6,
   bands: [[0, .12, '#2b2f35'], [.12, .78, '#1f3160'], [.78, .84, '#c8102e'], [.84, 1, '#b9bec4']],
@@ -383,6 +395,19 @@ const STAGES = [
     total: 'E5系 10両＋E6系 7両 → 17両', diff: 3, vApp: 28, decel: .7, react: .65, lag: .8, power: .1,
     trivia: '秋田新幹線「こまち」は盛岡駅で「はやぶさ」と併結し、最高320km/hで東京へ向かいます。連結のときは先頭のノーズカバーが開き、中から連結器が現れます。' },
 
+  { id: 'otsuki', st: '大月', kana: 'おおつき', roman: 'Ōtsuki', lineCol: '#f15a22',
+    line: 'JR東日本 中央本線・富士山麓電気鉄道', prev: '猿橋', next: '初狩',
+    standing: { s: 'E353', label: 'かいじ 9両', cars: 9 },
+    moving:   { s: 'E353', label: '富士回遊 3両', cars: 3 },
+    total: 'E353系「かいじ」9両＋「富士回遊」3両 → 12両', diff: 2, vApp: 18, decel: .85, react: .5, lag: .45, power: .14,
+    trivia: '特急「富士回遊」は、新宿から大月までは特急「かいじ」と連結した12両で走ります。大月でうしろの3両を切り離し、富士急行線に乗り入れて河口湖まで向かいます。新宿と河口湖を結ぶ初めての定期特急として、2019年3月に運転を始めました。上り列車は逆に、大月で連結して新宿へ向かいます。' },
+  { id: 'shimoimaichi', st: '下今市', kana: 'しもいまいち', roman: 'Shimo-imaichi', lineCol: '#004ea2',
+    line: '東武鉄道 日光線・鬼怒川線', prev: '明神', next: '上今市',
+    standing: { s: 'TB500', label: 'リバティけごん 3両', cars: 3 },
+    moving:   { s: 'TB500', label: 'リバティ会津 3両', cars: 3 },
+    total: '東武500系 3両＋3両 → 6両', diff: 2, vApp: 17, decel: .9, react: .45, lag: .4, power: .15,
+    trivia: '2017年にデビューした東武の特急「リバティ」（500系）は3両固定の編成で、途中駅で連結・切り離しができるように作られています。浅草から下今市までは6両で走り、下今市で東武日光行きの「リバティけごん」と、会津田島方面行きの「リバティ会津」に分かれます。上り列車は逆に下今市で連結します。車体はシャンパンベージュが基調です。' },
+
   { id: 'kagohara', cat: 'commuter', st: '籠原', kana: 'かごはら', roman: 'Kagohara', lineCol: '#f68b1e',
     line: 'JR東日本 高崎線', prev: '熊谷', next: '深谷',
     standing: { s: 'E231K', label: '付属編成 5両', cars: 5 },
@@ -401,6 +426,13 @@ const STAGES = [
     moving:   { s: 'OD8000', label: '6両', cars: 6 },
     total: '8000形 6両＋4両 → 10両', diff: 2, vApp: 20, decel: .9, react: .5, lag: .45, power: .15, tFull: 15, tZero: 45,
     trivia: '相模大野は小田原線と江ノ島線の分岐駅で、列車を分割・併結する駅として知られています。8000形は4両と6両の編成を組み合わせて10両で走ります。' },
+
+  { id: 'tsuchiura', cat: 'commuter', st: '土浦', kana: 'つちうら', roman: 'Tsuchiura', lineCol: '#004ea2',
+    line: 'JR東日本 常磐線', prev: '荒川沖', next: '神立',
+    standing: { s: 'E531', label: '基本編成 10両', cars: 10 },
+    moving:   { s: 'E531', label: '付属編成 5両', cars: 5 },
+    total: 'E531系 10両＋5両 → 15両', diff: 2, vApp: 17, decel: .9, react: .45, lag: .4, power: .15, tFull: 15, tZero: 45,
+    trivia: '常磐線の土浦より先（水戸方面）は、最大10両の列車しか走れません。そのため品川・上野方面からの15両編成は、土浦駅で5両の付属編成を連結したり切り離したりします。E531系は交流と直流の両方の区間を走れる電車です。' },
 
   { id: 'torikai', cat: 'kansai', st: '鳥飼車両基地', place: '鳥飼車両基地', kana: 'とりかい しゃりょうきち', roman: 'Torikai Depot', lineCol: '#1d50a2',
     line: 'JR東海 東海道新幹線（救援連結訓練）', prev: '新大阪方面', next: '京都方面',
