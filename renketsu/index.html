@@ -295,6 +295,18 @@ SERIES.KT21 = { name: '3220系', carLen: 20.5, h: 3.75, nose: 'flat', noseLen: .
   front: '#1b1e22', frontStripe: '#f2b705' };
 SERIES.KT9020 = Object.assign({}, SERIES.KT21, { name: '9020系' });
 SERIES.KT9820 = Object.assign({}, SERIES.KT21, { name: '9820系' });
+SERIES.NK10000 = { name: '10000系', carLen: 20.7, h: 3.75, nose: 'blunt', noseLen: 1.2, gapC: 0.8,
+  bands: [[0, .33, '#c9cdd1'], [.33, .37, '#ee7800'], [.37, .42, '#0068b7'], [.42, 1, '#c9cdd1']],
+  win: [.46, .8, '#1e242a'], winStep: 1.75, winW: 1.4, cab: '#171a1e', doors: 'one',
+  front: '#1b1e22', frontStripe: '#0068b7' };
+SERIES.NK7100 = { name: '7100系', carLen: 20.7, h: 3.75, nose: 'flat', noseLen: .6, gapC: 0.8,
+  bands: [[0, .33, '#c4cacf'], [.33, .37, '#ee7800'], [.37, .42, '#0068b7'], [.42, .9, '#c4cacf'], [.9, 1, '#aab1b7']],
+  win: [.47, .8, '#20262c'], winStep: 1.5, winW: 1.15, cab: '#181b1f', doors: 'four',
+  front: '#c4cacf', frontStripe: '#0068b7' };
+SERIES.KH13000 = { name: '13000系', carLen: 18.9, h: 3.75, nose: 'flat', noseLen: .7, gapC: 0.8,
+  bands: [[0, .34, '#f5f6f3'], [.34, .4, '#00703c'], [.4, .43, '#a8c81c'], [.43, 1, '#f5f6f3']],
+  win: [.47, .8, '#1f2428'], winStep: 1.5, winW: 1.15, cab: '#171a1d', doors: 'three',
+  front: '#1d2023', frontStripe: '#00703c' };
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -373,6 +385,12 @@ const STAGES = [
     moving:   { s: 'HK8200', label: '増結 2両', cars: 2 },
     total: '8000系 8両＋8200系 2両 → 10両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '阪急神戸線では、朝ラッシュに新開地から来た8両の通勤特急に、神戸三宮駅で2両を増結して10両にし、梅田（大阪梅田）へ向かう列車がありました。増結用に作られた8200系は、混雑時に座席をたたんで立ち席を増やせる車両です。この連結作業はすでに行われておらず、2025年2月のダイヤ改正で神戸線の10両編成もなくなりました。このステージは当時の作業を再現した場面です。車体は阪急マルーンにアイボリーの屋根まわりです。' },
+  { id: 'hagurazaki', cat: 'kansai', st: '羽倉崎', kana: 'はぐらざき', roman: 'Hagurazaki', lineCol: '#0068b7',
+    line: '南海電気鉄道 南海本線', prev: '井原里', next: '吉見ノ里',
+    standing: { s: 'NK7100', label: '自由席 4両', cars: 4 },
+    moving:   { s: 'NK10000', label: '指定席 4両', cars: 4 },
+    total: '10000系 4両＋7100系 4両 → 8両（特急サザン）', diff: 2, vApp: 17, decel: .9, react: .45, lag: .4, power: .14, tFull: 15, tZero: 45,
+    trivia: '南海本線の特急「サザン」は、指定席の10000系4両と自由席の7100系など4両を連結した8両で、なんば〜和歌山市を走ります。顔も車体の形も違う2形式が1本の特急になるのが見どころです。10000系は1985年の南海創業100周年にあわせて登場しました。このステージで連結作業をする場所（羽倉崎。隣に車両基地があります）は、ゲーム上の想定です。' },
 
   { id: 'utazu', cat: 'shikoku', st: '宇多津', kana: 'うたづ', roman: 'Utazu', lineCol: '#1e9bd7',
     line: 'JR四国 予讃線・本四備讃線', prev: '坂出', next: '丸亀',
@@ -423,6 +441,12 @@ const STAGES = [
     moving:   { s: 'M1800', label: '増結 2両', cars: 2 },
     total: '1200系 6両＋1800系 2両 → 8両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '名鉄の1800系は、ラッシュ時に6両の1200系（パノラマsuper）につないで8両の特急にするための2両編成として作られました。1200系は、前の2両が特別車、残り4両が一般車です。増結作業をする場所は、ゲーム上の想定です。' },
+  { id: 'kayashima-rescue', cat: 'emergency', rescue: true, st: '萱島', kana: 'かやしま', roman: 'Kayashima', lineCol: '#00703c',
+    line: '京阪電気鉄道 京阪本線', prev: '大和田', next: '寝屋川市',
+    standing: { s: 'KH13000', label: '故障した京阪電車 7両', cars: 7 },
+    moving:   { s: 'KH13000', label: '救援の京阪電車 4両', cars: 4 },
+    total: '京阪13000系 7両＋4両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '萱島駅は、ホームと屋根を突き抜けてクスノキの大木がそびえ立つ駅として知られています。近くには京阪の寝屋川車両基地があります。13000系は白い車体に京阪グリーンとシトラスグリーンの帯をまとった通勤車で、4両・7両などの編成があります。このステージは、故障した7両を4両の電車が救援するという非常時を想定した架空の場面です。' },
   { id: 'takeda-rescue', cat: 'emergency', rescue: true, st: '竹田', kana: 'たけだ', roman: 'Takeda', lineCol: '#00a15e',
     line: '京都市営地下鉄 烏丸線・近鉄京都線', prev: '上鳥羽口', next: '伏見',
     standing: { s: 'KY10', label: '故障した烏丸線の電車 6両', cars: 6 },
