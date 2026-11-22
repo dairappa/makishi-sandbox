@@ -285,6 +285,16 @@ SERIES.HK8000 = { name: '8000系', carLen: 19, h: 3.75, nose: 'flat', noseLen: .
   win: [.47, .8, '#1d1a1a'], winStep: 1.5, winW: 1.15, cab: '#161313', doors: 'three',
   front: '#5e1a1f' };
 SERIES.HK8200 = Object.assign({}, SERIES.HK8000, { name: '8200系' });
+SERIES.KY10 = { name: '京都市交通局10系', carLen: 20, h: 3.7, nose: 'flat', noseLen: .7, gapC: 0.8,
+  bands: [[0, .35, '#c5cbd0'], [.35, .42, '#00a15e'], [.42, .9, '#c5cbd0'], [.9, 1, '#aab1b7']],
+  win: [.47, .8, '#20272e'], winStep: 1.5, winW: 1.15, cab: '#16191d', doors: 'four',
+  front: '#1d2125', frontStripe: '#00a15e' };
+SERIES.KT21 = { name: '3220系', carLen: 20.5, h: 3.75, nose: 'flat', noseLen: .7, gapC: 0.8,
+  bands: [[0, .36, '#6a5144'], [.36, .4, '#f2b705'], [.4, 1, '#f2f1ec']],
+  win: [.46, .8, '#1f2328'], winStep: 1.5, winW: 1.15, cab: '#181b1f', doors: 'four',
+  front: '#1b1e22', frontStripe: '#f2b705' };
+SERIES.KT9020 = Object.assign({}, SERIES.KT21, { name: '9020系' });
+SERIES.KT9820 = Object.assign({}, SERIES.KT21, { name: '9820系' });
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -413,6 +423,18 @@ const STAGES = [
     moving:   { s: 'M1800', label: '増結 2両', cars: 2 },
     total: '1200系 6両＋1800系 2両 → 8両', diff: 1, vApp: 15, decel: .95, react: .4, lag: .35, power: .16, tFull: 15, tZero: 45,
     trivia: '名鉄の1800系は、ラッシュ時に6両の1200系（パノラマsuper）につないで8両の特急にするための2両編成として作られました。1200系は、前の2両が特別車、残り4両が一般車です。増結作業をする場所は、ゲーム上の想定です。' },
+  { id: 'takeda-rescue', cat: 'emergency', rescue: true, st: '竹田', kana: 'たけだ', roman: 'Takeda', lineCol: '#00a15e',
+    line: '京都市営地下鉄 烏丸線・近鉄京都線', prev: '上鳥羽口', next: '伏見',
+    standing: { s: 'KY10', label: '故障した烏丸線の電車 6両', cars: 6 },
+    moving:   { s: 'KT21', label: '救援の近鉄電車 6両', cars: 6 },
+    total: '京都市交通局10系 6両＋近鉄3220系 6両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '京都市営地下鉄烏丸線と近鉄京都線は竹田駅でつながり、相互直通運転をしています。地下鉄の10系・20系と近鉄の3220系が、国際会館から近鉄奈良まで同じ線路を走ります。このステージは、故障して動けなくなった地下鉄の電車に近鉄の電車をつないで運ぶ、という非常時を想定した架空の場面です。実際の救援の方法や、つなぐ車両の組み合わせは、事業者ごとに決められています。' },
+  { id: 'saidaiji-rescue', cat: 'emergency', rescue: true, st: '大和西大寺', kana: 'やまとさいだいじ', roman: 'Yamato-Saidaiji', lineCol: '#c8102e',
+    line: '近畿日本鉄道 奈良線・京都線・橿原線', prev: '菖蒲池', next: '新大宮',
+    standing: { s: 'KT9820', label: '故障した近鉄電車 6両', cars: 6 },
+    moving:   { s: 'KT9020', label: '救援の近鉄電車 2両', cars: 2 },
+    total: '近鉄9820系 6両＋9020系 2両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '大和西大寺は奈良線・京都線・橿原線が集まる近鉄の大きな乗り換え駅で、隣に車両基地があります。9820系（6両）と9020系（2両）は「シリーズ21」と呼ばれる仲間で、白・茶色・黄色の同じ塗装です。ふだんから連結して走ることができます。このステージは、故障した6両を2両の電車が救援するという非常時を想定した架空の場面です。' },
 ];
 
 const placeOf = s => s.place || s.st + '駅';
@@ -506,7 +528,7 @@ function newGame(stage) {
   btnRed.disabled = false; btnGreen.disabled = true;
   resetInput();
   $('hud').hidden = G.pro;
-  say(`<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
+  say((stage.rescue ? `【非常時】${stage.standing.label}を救援します。` : '') + `<em>${stage.moving.label}</em>（${G.M.name}）が進入してきます。<em>赤旗</em>で連結面の手前3〜8mに一旦停止させてください。`);
   Snd.whistle(.5, false);
 }
 
@@ -712,7 +734,7 @@ function openMenu() {
     const cat = s.cat || 'express';
     if (cat !== lastCat) {
       const h = document.createElement('h3'); h.className = 'grp';
-      h.textContent = { commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州', hokkaido: '北海道', chubu: '中部' }[cat] || '特急・新幹線';
+      h.textContent = { emergency: '非常時（救援連結）', commuter: '通勤電車', kansai: '関西', shikoku: '四国', kyushu: '九州', hokkaido: '北海道', chubu: '中部' }[cat] || '特急・新幹線';
       box.appendChild(h); lastCat = cat;
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
@@ -739,7 +761,7 @@ $('pro').checked = !!store.get('renketsu-pro', false);
 $('pro').onchange = () => store.set('renketsu-pro', $('pro').checked);
 
 /* ---------- 描画 ---------- */
-function drawCar(c, s, L, isLead, coupler) {
+function drawCar(c, s, L, isLead, coupler, dead) {
   const base = 1.0, top = base + s.h, n = s.noseLen;
   c.beginPath();
   if (isLead && s.nose === 'long') {
@@ -797,8 +819,12 @@ function drawCar(c, s, L, isLead, coupler) {
   c.fillStyle = 'rgba(255,255,255,.08)'; c.fillRect(-L - 1, base + s.h * .5, L + 2, s.h * .05);
   c.restore();
   c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = .06; c.stroke();
-  // 前照灯
-  if (isLead) {
+  // 前照灯（故障列車は消灯し、赤い非常灯を点滅）
+  if (isLead && dead) {
+    const on = Math.floor(performance.now() / 450) % 2 === 0;
+    c.fillStyle = on ? '#ff3030' : '#5a1a1a';
+    c.beginPath(); c.ellipse(-.25, base + s.h * .32, .22, .14, 0, 0, Math.PI * 2); c.fill();
+  } else if (isLead) {
     c.fillStyle = '#fff6c8';
     const hx = s.nose === 'long' ? -1.4 : -.25, hy = s.nose === 'long' ? base + .75 : base + s.h * .32;
     c.beginPath(); c.ellipse(hx, hy, .28, .12, 0, 0, Math.PI * 2); c.fill();
@@ -815,7 +841,7 @@ function drawCar(c, s, L, isLead, coupler) {
   }
 }
 
-function drawTrain(series, cars, frontX, dir, railY, coupler, viewL, viewR) {
+function drawTrain(series, cars, frontX, dir, railY, coupler, viewL, viewR, dead) {
   const s = series, L = s.carLen;
   ctx.save();
   ctx.translate(X(frontX), railY);
@@ -827,7 +853,7 @@ function drawTrain(series, cars, frontX, dir, railY, coupler, viewL, viewR) {
     ctx.save(); ctx.translate(off, 0);
     // 貫通幌
     if (i > 0) { ctx.fillStyle = '#2b2f35'; ctx.fillRect(0, 1.2, s.gapC, s.h * .78); }
-    drawCar(ctx, s, L, i === 0, coupler);
+    drawCar(ctx, s, L, i === 0, coupler, dead);
     ctx.restore();
   }
   ctx.restore();
@@ -972,7 +998,7 @@ function render() {
   // 列車
   const viewL = -OX / ppm - 2, viewR = (W - OX) / ppm + 2;
   if (G) {
-    drawTrain(G.S, G.stage.standing.cars, 0, 1, railY, G.coupler, viewL, viewR);
+    drawTrain(G.S, G.stage.standing.cars, 0, 1, railY, G.coupler, viewL, viewR, !!G.stage.rescue && G.state !== 'coupled' && G.state !== 'result');
     drawTrain(G.M, G.stage.moving.cars, gap, -1, railY, G.coupler, viewL, viewR);
     if (G.state === 'coupled' && G.stateT < 1.2) {
       c.fillStyle = `rgba(255,220,140,${(1 - G.stateT / 1.2) * .6})`;
