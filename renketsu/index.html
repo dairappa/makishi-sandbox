@@ -390,6 +390,56 @@ SERIES.EF510 = { name: 'EF510形', freight: true, carLen: 18.4, base: 1.25, h: 2
   front: '#c8102e', frontStripe: '#f2f2f2', bogies: [-4.2, -14.2], vents: true };
 SERIES.KOKI = { name: 'コキ107形', freight: true, kind: 'koki', carLen: 19.6, h: 3.6, gapC: 0.6, couplerY: .72,
   bands: [[0, 1, '#3d4248']], win: [0, 0, '#000'], bogies: [-2.3, -17.3] };
+SERIES.J285 = { name: '285系', carLen: 21.3, h: 4.0, nose: 'blunt', noseLen: 2.2, gapC: 0.7,
+  bands: [[0, .42, '#7a2430'], [.42, .45, '#c9a55a'], [.45, 1, '#ece3cf']],
+  win: [.5, .66, '#1b1d22'], winStep: 2.4, winW: 1.8, cab: '#15181c', doors: 'one',
+  front: '#7a2430', frontStripe: '#c9a55a' };
+SERIES.EF210 = Object.assign({}, SERIES.EF510, { name: 'EF210形',
+  bands: [[0, .12, '#2b2f35'], [.12, .82, '#1f5fae'], [.82, .86, '#d8dde2'], [.86, 1, '#9aa1a8']],
+  front: '#1f5fae', frontStripe: '#d8dde2' });
+SERIES.EH500 = Object.assign({}, SERIES.EF510, { name: 'EH500形', carLen: 25, bogies: [-3.2, -9.2, -15.8, -21.8],
+  bands: [[0, .12, '#2b2f35'], [.12, .82, '#8e1f2c'], [.82, .86, '#c8ccd0'], [.86, 1, '#8a9097']],
+  front: '#8e1f2c', frontStripe: '#c8ccd0' });
+SERIES.TY2000 = { name: '東葉高速2000系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#ee7800'], [.39, .43, '#f2f2f2'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#ee7800' };
+SERIES.E233J = { name: 'E233系2000番台', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#00a99d'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#17191c', frontStripe: '#00a99d' };
+SERIES.KS3100 = { name: '京成3100形', carLen: 18, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#ee7800'], [.39, .43, '#0068b7'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'three',
+  front: '#f2f2f2', frontStripe: '#ee7800' };
+SERIES.TM9000 = { name: '東京メトロ9000系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#00ada9'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'three',
+  front: '#1b1f23', frontStripe: '#00ada9' };
+SERIES.TK3020 = { name: '東急3020系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#0068b7'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'three',
+  front: '#1c2024', frontStripe: '#0068b7' };
+SERIES.SY6000 = { name: '山陽電鉄6000系', carLen: 19, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, .35, '#c6ccd1'], [.35, .39, '#d7001a'], [.39, .43, '#1b1b1d'], [.43, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'three',
+  front: '#1b1b1d', frontStripe: '#d7001a' };
+SERIES.MT100 = { name: '名鉄100系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#d7192d'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1c2024', frontStripe: '#d7192d' };
+SERIES.NG3000 = { name: '名古屋市交通局N3000形', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#00a0de'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#00a0de' };
+SERIES.JK305 = { name: 'JR九州305系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.34, '#c6ccd1'], [0.34, 0.38, '#1b1b1d'], [0.38, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#f4f4f2', frontStripe: '#d7001a' };
+SERIES.FK2000 = { name: '福岡市交通局2000N系', carLen: 20, h: 3.65, nose: 'flat', noseLen: .7, gapC: 0.7,
+  bands: [[0, 0.36, '#c6ccd1'], [0.36, 0.41, '#f39800'], [0.41, .9, '#c6ccd1'], [.9, 1, '#aab1b7']],
+  win: [.47, .82, '#1f262d'], winStep: 1.5, winW: 1.15, cab: '#15191d', doors: 'four',
+  front: '#1b1f23', frontStripe: '#f39800' };
 SERIES.M1800 = Object.assign({}, SERIES.M1200, { name: '1800系' });
 
 /* ---------- 駅・ステージ ---------- */
@@ -444,6 +494,13 @@ const STAGES = [
     moving:   { s: 'J287', label: '増結 3両', cars: 3 },
     total: '287系 6両＋3両 → 9両', diff: 2, vApp: 18, decel: .85, react: .5, lag: .45, power: .14,
     trivia: '特急「くろしお」の287系は、ふだんは6両で走ります。お客さんの多い時期には3両を増結した9両になり、新大阪〜白浜間を走る日があります。9両のときは6号車と7号車の間を通り抜けられません。このステージでは、白浜駅で3両を増結する場面を想定しています。' },
+
+  { id: 'okayama', st: '岡山', kana: 'おかやま', roman: 'Okayama', lineCol: '#7a2430',
+    line: 'JR西日本 山陽本線・宇野線', prev: '西川原', next: '北長瀬',
+    standing: { s: 'J285', label: 'サンライズ瀬戸 7両', cars: 7 },
+    moving:   { s: 'J285', label: 'サンライズ出雲 7両', cars: 7 },
+    total: '285系 7両＋7両 → 14両（寝台特急）', diff: 3, vApp: 16, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '日本で唯一の定期寝台特急「サンライズ瀬戸・出雲」は、東京〜岡山間を14両でつながって走ります。岡山で、高松行きの「サンライズ瀬戸」と出雲市行きの「サンライズ出雲」に分かれます。上り列車は岡山で連結して東京へ向かいます。285系は7両で1編成で、そのうち5両が2階建て車両です。' },
 
   { id: 'kagohara', cat: 'commuter', st: '籠原', kana: 'かごはら', roman: 'Kagohara', lineCol: '#f68b1e',
     line: 'JR東日本 高崎線', prev: '熊谷', next: '深谷',
@@ -576,6 +633,18 @@ const STAGES = [
     moving:   { s: 'EF510', label: 'EF510形電気機関車', cars: 1 },
     total: 'EF510形＋コキ107形 20両（コンテナ列車）', diff: 2, vApp: 13, decel: .85, react: .5, lag: .4, power: .16,
     trivia: '北海道と本州を結ぶ貨物列車は、東青森駅で機関車を付け替えます。青函トンネルを通ってきたEH800形を切り離し、日本海側を走るEF510形「ECO-POWER レッドサンダー」につなぎます。北海道の帯広から大阪の吹田まで、4両の機関車をリレーして約31時間で走る列車もあります。車体の色とコンテナの色は単純化しています。' },
+  { id: 'suita-ft', cat: 'freight', freight: true, st: '吹田貨物ターミナル', place: '吹田貨物ターミナル駅', kana: 'すいたかもつたーみなる', roman: 'Suita Freight Terminal', lineCol: '#1f5fae',
+    line: 'JR貨物 東海道本線（貨物駅）', prev: '京都方面', next: '大阪方面',
+    standing: { s: 'KOKI', label: 'コンテナ貨車 20両', cars: 20 },
+    moving:   { s: 'EF210', label: 'EF210形電気機関車', cars: 1 },
+    total: 'EF210形＋コキ107形 20両（コンテナ列車）', diff: 1, vApp: 12, decel: .9, react: .45, lag: .4, power: .16,
+    trivia: 'コンテナを積み終わった貨物列車は、出発の前に機関車をつないで初めて動けるようになります。EF210形「ECO-POWER 桃太郎」は、東海道・山陽本線などで貨物列車を引く電気機関車です。吹田貨物ターミナル駅は、大阪府吹田市・摂津市にあるJR貨物の大きな貨物駅です。車体の色とコンテナの色は単純化しています。' },
+  { id: 'sumidagawa', cat: 'freight', freight: true, st: '隅田川', place: '隅田川駅（貨物駅）', kana: 'すみだがわ', roman: 'Sumidagawa', lineCol: '#8e1f2c',
+    line: 'JR貨物 常磐線（貨物駅）', prev: '南千住方面', next: '田端方面',
+    standing: { s: 'KOKI', label: 'コンテナ貨車 20両', cars: 20 },
+    moving:   { s: 'EH500', label: 'EH500形電気機関車', cars: 1 },
+    total: 'EH500形＋コキ107形 20両（コンテナ列車）', diff: 2, vApp: 12, decel: .85, react: .5, lag: .45, power: .15,
+    trivia: 'EH500形「ECO-POWER 金太郎」は、2つの車体をつないだ8軸の電気機関車で、直流と交流の両方の区間を走れます。首都圏から東北、九州北部などで貨物列車を引いています。隅田川駅は東京都荒川区にある貨物駅です。車体の色とコンテナの色は単純化しています。' },
   { id: 'osaki-rescue', cat: 'emergency', rescue: true, st: '大崎', kana: 'おおさき', roman: 'Ōsaki', lineCol: '#00a26b',
     line: 'JR東日本 埼京線・東京臨海高速鉄道 りんかい線', prev: '大井町', next: '恵比寿',
     standing: { s: 'TWR71', label: '故障したりんかい線の電車 10両', cars: 10 },
@@ -642,6 +711,48 @@ const STAGES = [
     moving:   { s: 'TM17000', label: '救援の東京メトロの電車 10両', cars: 10 },
     total: '東武50070型 10両＋東京メトロ17000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
     trivia: '東武東上線と東京メトロ有楽町線・副都心線は和光市駅でつながり、相互直通運転をしています。東武の50070型は、副都心線への乗り入れのために作られた車両です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'nishifunabashi-rescue', cat: 'emergency', rescue: true, st: '西船橋', kana: 'にしふなばし', roman: 'Nishi-Funabashi', lineCol: '#009bbf',
+    line: '東京メトロ東西線・東葉高速線', prev: '原木中山', next: '船橋',
+    standing: { s: 'TY2000', label: '故障した東葉高速の電車 10両', cars: 10 },
+    moving:   { s: 'TM15000', label: '救援の東西線の電車 10両', cars: 10 },
+    total: '東葉高速2000系 10両＋東京メトロ15000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '東京メトロ東西線と東葉高速線は西船橋駅でつながり、相互直通運転をしています。このステージは非常時を想定した架空の場面です。' },
+  { id: 'ayase-rescue', cat: 'emergency', rescue: true, st: '綾瀬', kana: 'あやせ', roman: 'Ayase', lineCol: '#00a854',
+    line: '東京メトロ千代田線・JR常磐線各駅停車', prev: '北千住', next: '亀有',
+    standing: { s: 'E233J', label: '故障したJRの電車 10両', cars: 10 },
+    moving:   { s: 'TM16000', label: '救援の千代田線の電車 10両', cars: 10 },
+    total: 'E233系2000番台 10両＋東京メトロ16000系 10両（救援）', diff: 3, vApp: 13, decel: .8, react: .6, lag: .65, power: .11,
+    trivia: '東京メトロ千代田線とJR常磐線各駅停車は綾瀬駅を境に相互直通運転をしています。E233系2000番台は、千代田線に乗り入れるために作られた車両です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'oshiage-rescue', cat: 'emergency', rescue: true, st: '押上', kana: 'おしあげ', roman: 'Oshiage', lineCol: '#e85298',
+    line: '都営地下鉄浅草線・京成押上線', prev: '本所吾妻橋', next: '京成曳舟',
+    standing: { s: 'KS3100', label: '故障した京成の電車 8両', cars: 8 },
+    moving:   { s: 'TO5500', label: '救援の浅草線の電車 8両', cars: 8 },
+    total: '京成3100形 8両＋都営5500形 8両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '都営浅草線と京成押上線は押上駅でつながり、相互直通運転をしています。1960年に始まった、日本で最初の地下鉄と私鉄の相互直通運転です。このステージは非常時を想定した架空の場面です。' },
+  { id: 'meguro-rescue', cat: 'emergency', rescue: true, st: '目黒', kana: 'めぐろ', roman: 'Meguro', lineCol: '#00ada9',
+    line: '東急目黒線・東京メトロ南北線', prev: '白金台', next: '不動前',
+    standing: { s: 'TK3020', label: '故障した東急の電車 8両', cars: 8 },
+    moving:   { s: 'TM9000', label: '救援の南北線の電車 8両', cars: 8 },
+    total: '東急3020系 8両＋東京メトロ9000系 8両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '東急目黒線と東京メトロ南北線・都営三田線は目黒駅でつながり、相互直通運転をしています。このステージは非常時を想定した架空の場面です。' },
+  { id: 'nishidai-rescue', cat: 'emergency', rescue: true, st: '西代', kana: 'にしだい', roman: 'Nishidai', lineCol: '#d7001a',
+    line: '山陽電気鉄道 本線・神戸高速線', prev: '大開', next: '板宿',
+    standing: { s: 'SY6000', label: '故障した山陽の電車 6両', cars: 6 },
+    moving:   { s: 'HS1000', label: '救援の阪神の電車 6両', cars: 6 },
+    total: '山陽6000系 6両＋阪神1000系 6両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '山陽電車と阪神電車は神戸高速線を通って相互直通運転をしていて、姫路と大阪梅田を結ぶ「直通特急」が走っています。このステージは非常時を想定した架空の場面です。' },
+  { id: 'akaike-rescue', cat: 'emergency', rescue: true, st: '赤池', kana: 'あかいけ', roman: 'Akaike', lineCol: '#00a0de',
+    line: '名古屋市営地下鉄鶴舞線・名鉄豊田線', prev: '平針', next: '日進',
+    standing: { s: 'MT100', label: '故障した名鉄の電車 6両', cars: 6 },
+    moving:   { s: 'NG3000', label: '救援の鶴舞線の電車 6両', cars: 6 },
+    total: '名鉄100系 6両＋名古屋市交通局N3000形 6両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '名古屋市営地下鉄鶴舞線と名鉄豊田線は赤池駅でつながり、相互直通運転をしています。このステージは非常時を想定した架空の場面です。' },
+  { id: 'meinohama-rescue', cat: 'emergency', rescue: true, st: '姪浜', kana: 'めいのはま', roman: 'Meinohama', lineCol: '#f39800',
+    line: '福岡市地下鉄空港線・JR筑肥線', prev: '室見', next: '下山門',
+    standing: { s: 'JK305', label: '故障したJRの電車 6両', cars: 6 },
+    moving:   { s: 'FK2000', label: '救援の地下鉄の電車 6両', cars: 6 },
+    total: 'JR九州305系 6両＋福岡市交通局2000N系 6両（救援）', diff: 2, vApp: 14, decel: .85, react: .55, lag: .5, power: .13,
+    trivia: '福岡市地下鉄空港線とJR筑肥線は姪浜駅でつながり、福岡空港から唐津方面まで相互直通運転をしています。このステージは非常時を想定した架空の場面です。' },
 ];
 
 const placeOf = s => s.place || s.st + '駅';
@@ -946,7 +1057,7 @@ function openMenu() {
     }
     const b = document.createElement('button'); b.type = 'button'; b.className = 'card';
     const bs = best[s.id], bp = best[s.id + '-pro'];
-    b.innerHTML = `<div class="ekimei"><div class="nm">${s.st}</div><div class="kn">${s.kana}</div>
+    b.innerHTML = `<div class="ekimei"><div class="nm"${s.st.length > 6 ? ' style="font-size:1.15rem;letter-spacing:.08em"' : s.st.length > 4 ? ' style="letter-spacing:.12em"' : ''}>${s.st}</div><div class="kn">${s.kana}</div>
       <div class="lc" style="background:${s.lineCol}"></div>
       <div class="adj"><span>← ${s.prev}</span><span>${s.next} →</span></div></div>
       <div class="body"><div class="line">${s.line}</div>
@@ -1185,9 +1296,9 @@ function drawSign(stg) {
   c.fillStyle = '#f7f8f6'; c.fillRect(x, y, sw, sh);
   c.fillStyle = '#111'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
   c.font = `900 ${sh * .4}px ${getComputedStyle(document.body).getPropertyValue('--font-ui')}`;
-  c.fillText(stg.st, x + sw / 2, y + sh * .46);
+  c.fillText(stg.st, x + sw / 2, y + sh * .46, sw * .92); // 長い駅名は枠に収める
   c.font = `700 ${sh * .13}px sans-serif`;
-  c.fillText(`${stg.kana}　${stg.roman}`, x + sw / 2, y + sh * .64);
+  c.fillText(`${stg.kana}　${stg.roman}`, x + sw / 2, y + sh * .64, sw * .94);
   c.fillStyle = stg.lineCol; c.fillRect(x, y + sh * .7, sw, sh * .1);
   c.fillStyle = '#222'; c.font = `500 ${sh * .12}px sans-serif`;
   c.textAlign = 'left'; c.fillText('← ' + stg.prev, x + 8, y + sh * .94);
