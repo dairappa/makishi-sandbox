@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 394 84" width="1182" height="252">
+  <rect width="100%" height="100%" rx="6" fill="#1c1f24"/>
+  <g transform="translate(10,10)">
+  <circle cx="76" cy="6" r="4.6" fill="#c4c9cf"/>
+  <circle cx="66" cy="19" r="4.6" fill="#ffffff"/>
+  <circle cx="86" cy="19" r="4.6" fill="#ffffff"/>
+  <circle cx="16" cy="32" r="4.6" fill="#ffffff"/>
+  <circle cx="56" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="76" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="96" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="6" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="26" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="46" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="66" cy="45" r="4.6" fill="#36c2d6"/>
+  <circle cx="86" cy="45" r="4.6" fill="#36c2d6"/>
+  <circle cx="106" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="16" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="36" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="56" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="76" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="96" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="116" cy="58" r="4.6" fill="#4fa3e6"/>
+  <circle cx="318" cy="6" r="4.6" fill="#c4c9cf"/>
+  <circle cx="328" cy="19" r="4.6" fill="#ffffff"/>
+  <circle cx="308" cy="19" r="4.6" fill="#ffffff"/>
+  <circle cx="378" cy="32" r="4.6" fill="#ffffff"/>
+  <circle cx="338" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="318" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="298" cy="32" r="4.6" fill="#5cb3ea"/>
+  <circle cx="388" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="368" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="348" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="328" cy="45" r="4.6" fill="#36c2d6"/>
+  <circle cx="308" cy="45" r="4.6" fill="#36c2d6"/>
+  <circle cx="288" cy="45" r="4.6" fill="#4fa3e6"/>
+  <circle cx="378" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="358" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="338" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="318" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="298" cy="58" r="4.6" fill="#36c2d6"/>
+  <circle cx="278" cy="58" r="4.6" fill="#4fa3e6"/>
+  </g>
+</svg>
